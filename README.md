@@ -16,6 +16,39 @@ A documentação é feita com OpenAPI 3 e renderizada no Scalar em `/docs`.
 - OpenAPI 3.0 + Scalar (UI em `/docs`)  
 - Observabilidade com Prometheus e Grafana  
 
+## Segurança
+
+- JWT (Access Token): Autenticação com expiração curta (15m)
+- Refresh Token: HttpOnly cookie para renovação segura
+- bcryptjs: Hash de senhas com salt (BCRYPT_COST = 10)
+- CORS-ready: Estrutura preparada para adicionar CORS headers
+
+## Banco de Dados
+
+- Prisma ORM: Type-safe database client
+- PostgreSQL: Banco de dados relacional
+- Migrations: Versionamento de schema com `prisma migrate`
+- Cascade Delete: Relacionamentos com deleção em cascata
+
+## Testes
+
+- Jest: Framework de testes unitários
+  Cobertura: Unit tests para entities, use cases e errors
+- Mocking: Isolamento de componentes (Prisma, crypto, JWT)
+
+## Code Quality
+
+- ESLint + Prettier: Lint e formatação automática
+- Husky + lint-staged: Git hooks para validar código antes de commit
+- GitHub Actions: CI/CD com validação de PR (título, assignee, labels)
+
+
+## Deployment
+
+- Docker Compose: Ambiente local com Postgres, Prometheus, Grafana
+- Kubernetes: Manifestos prontos (api, postgres, prometheus, grafana)
+- Kind: Local K8s cluster para testes
+
 ## Wireframes e fluxos
 
 O wireframe abaixo representa o fluxo de telas do aplicativo de lista de compras
