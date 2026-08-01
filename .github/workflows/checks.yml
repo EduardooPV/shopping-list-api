@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
 
       - name: Install dependencies
         run: npm install
@@ -25,7 +25,7 @@ jobs:
         run: npm run lint
 
       - name: Check Prettier formatting
-        run: npm run format
+        run: npm run format:check
 
   unit-test:
     name: Unit Tests
@@ -38,10 +38,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
 
       - name: Install dependencies
         run: npm install
 
       - name: Run Unit Tests
-        run: npm run unit:test
+        run: npm run test:unit
