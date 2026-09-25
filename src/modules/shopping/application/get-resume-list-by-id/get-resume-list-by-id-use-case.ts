@@ -1,11 +1,11 @@
 import { InvalidUserIdError } from 'modules/users/domain/errors/invalid-user-id-error';
-import { PostgresShoppingListRespository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
 import { ListNotFound } from 'modules/shopping/domain/errors/list-not-found';
 import { NoPermission } from 'shared/errors/no-permission';
 import { IGetResumeByIdDTO, IGetResumeByIdResponse } from './get-resume-list-by-id-dto';
+import { IShoppingList } from 'modules/shopping/domain/repositories/shopping-list-repository';
 
 class GetResumeByIdUseCase {
-  constructor(private shoppingListRepository: PostgresShoppingListRespository) {}
+  constructor(private shoppingListRepository: IShoppingList) {}
 
   async execute(data: IGetResumeByIdDTO): Promise<IGetResumeByIdResponse> {
     if (data.userId == null) throw new InvalidUserIdError({ reason: 'missing' });

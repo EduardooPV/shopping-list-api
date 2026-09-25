@@ -3,14 +3,14 @@ import { PostgresItemListRepository } from 'modules/item/infrastructure/database
 import { IDeleteItemByIdDTO } from './delete-item-by-id-dto';
 import { InvalidItemId } from 'modules/item/domain/errors/invalid-item-id';
 import { ItemNotFound } from 'modules/item/domain/errors/item-not-found';
-import { PostgresShoppingListRespository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
 import { ListNotFound } from 'modules/shopping/domain/errors/list-not-found';
 import { NoPermission } from 'shared/errors/no-permission';
+import { IShoppingList } from 'modules/shopping/domain/repositories/shopping-list-repository';
 
 class DeleteItemByIdUseCase {
   constructor(
     private itemListRepository: PostgresItemListRepository,
-    private shoppingListRepository: PostgresShoppingListRespository,
+    private shoppingListRepository: IShoppingList,
   ) {}
 
   async execute(data: IDeleteItemByIdDTO): Promise<void> {

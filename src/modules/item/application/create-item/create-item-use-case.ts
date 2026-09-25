@@ -3,14 +3,14 @@ import { InvalidItemName } from 'modules/item/domain/errors/invalid-item-name';
 import { InvalidShoppingListId } from 'modules/item/domain/errors/invalid-shopping-list-id';
 import { PostgresItemListRepository } from 'modules/item/infrastructure/database/postgres-item-list-repository';
 import { ICreateItemRequestDTO } from './create-item-dto';
-import { PostgresShoppingListRespository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
 import { ListNotFound } from 'modules/shopping/domain/errors/list-not-found';
 import { NoPermission } from 'shared/errors/no-permission';
+import { IShoppingList } from 'modules/shopping/domain/repositories/shopping-list-repository';
 
 class CreateItemUseCase {
   constructor(
     private itemListRepository: PostgresItemListRepository,
-    private shoppingListRepository: PostgresShoppingListRespository,
+    private shoppingListRepository: IShoppingList,
   ) {}
 
   async execute(data: ICreateItemRequestDTO): Promise<ItemList> {
