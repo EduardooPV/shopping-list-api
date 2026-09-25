@@ -30,24 +30,24 @@
 
 Backend de um gerenciador de listas de compras: usuários criam conta, montam listas, adicionam itens com nome, quantidade e valor, marcam itens como feitos e consultam um resumo com total gasto e contagem de pendentes/concluídos.
 
-API REST em Node.js construída **sem framework** (usando o módulo nativo `http`), agora totalmente estruturada em **classes e princípios de POO**.  
-O objetivo é compreender o funcionamento de baixo nível de uma API: ciclo de vida da requisição/resposta, roteamento manual, middlewares, tratamento centralizado de erros e autenticação com JWT + Refresh Token via cookie HttpOnly.  
+API REST em Node.js construída **sem framework** (usando o módulo nativo `http`), agora totalmente estruturada em **classes e princípios de POO**.
+O objetivo é compreender o funcionamento de baixo nível de uma API: ciclo de vida da requisição/resposta, roteamento manual, middlewares, tratamento centralizado de erros e autenticação com JWT + Refresh Token via cookie HttpOnly.
 A documentação é feita com OpenAPI 3 e renderizada no Scalar em `/docs`.
 
 ---
 
 ## Stack
 
-| Camada          | Tecnologia                                    |
-|-----------------|-----------------------------------------------|
-| Runtime         | Node.js 18+ com TypeScript                    |
-| HTTP            | Módulo nativo `http` (sem framework)          |
-| Banco de dados  | Prisma + PostgreSQL                           |
-| Testes          | Jest                                          |
-| Documentação    | OpenAPI 3.0 + Scalar (UI em `/docs`)          |
-| Observabilidade | Prometheus e Grafana                          |
-| Qualidade       | ESLint + Prettier + Husky                     |
-| CI/CD           | GitHub Actions                                |
+| Camada          | Tecnologia                                     |
+| --------------- | ---------------------------------------------- |
+| Runtime         | Node.js 18+ com TypeScript                     |
+| HTTP            | Módulo nativo `http` (sem framework)           |
+| Banco de dados  | Prisma + PostgreSQL                            |
+| Testes          | Jest                                           |
+| Documentação    | OpenAPI 3.0 + Scalar (UI em `/docs`)           |
+| Observabilidade | Prometheus e Grafana                           |
+| Qualidade       | ESLint + Prettier + Husky                      |
+| CI/CD           | GitHub Actions                                 |
 | Infraestrutura  | Docker Compose (Postgres, Prometheus, Grafana) |
 
 ---
@@ -58,13 +58,16 @@ O wireframe abaixo representa o fluxo de telas do aplicativo de lista de compras
 e as rotas da API associadas.
 
 ### Login e Registro
-![Wireflow do app](./docs/wireframes/login.png)
+
+![Wireflow do app](../docs/wireframes/login.png)
 
 ### Lista de compras
-![Wireflow do app](./docs/wireframes/list.png)
+
+![Wireflow do app](../docs/wireframes/list.png)
 
 ### Items da lista
-![Wireflow do app](./docs/wireframes/list-items.png)
+
+![Wireflow do app](../docs/wireframes/list-items.png)
 
 ---
 
@@ -145,7 +148,7 @@ A API expõe métricas em formato Prometheus em `GET /metrics`.
 - `http_request_duration_seconds_*{method,route,status}` — histograma de latência (serve para p50/p95/p99).
 - `api_*` — métricas automáticas do processo Node (CPU, memória, GC, event loop), via `collectDefaultMetrics`.
 
-**Prometheus:**: [http://localhost:9090](http://localhost:9090)  
+**Prometheus:**: [http://localhost:9090](http://localhost:9090)
 **Grafana:**: [http://localhost:3000](http://localhost:3000)
 
 ---
