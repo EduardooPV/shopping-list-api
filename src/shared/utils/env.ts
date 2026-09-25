@@ -9,6 +9,7 @@ const EnvSchema = z.object({
   REFRESH_SECRET_JWT: z.string().min(25, 'REFRESH_SECRET_JWT deve ter pelo menos 25 chars'),
   REFRESH_TOKEN_EXPIRATION: duration.default('7d'),
   ACCESS_TOKEN_EXPIRATION: duration.default('15m'),
+  ALLOWED_ORIGINS: z.string().default('http://localhost:3000'),
 });
 
 const parsed = EnvSchema.safeParse(process.env);
@@ -29,6 +30,7 @@ const env = Object.freeze({
     ? parsed.data.REFRESH_SECRET_JWT
     : 'test_refresh_secret_jwt_123456789012345',
   refreshTokenExpiration: parsed.success ? parsed.data.REFRESH_TOKEN_EXPIRATION : '7d',
+  allowedOrigins: parsed.success ? parsed.data.ALLOWED_ORIGINS : 'http://localhost:3000',
 });
 
 export { env };

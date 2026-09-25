@@ -4,6 +4,7 @@ import { router } from './';
 import { HttpErrorHandler } from 'core/http/utils/handle-http-error';
 import { MetricsRecorderMiddleware } from 'core/http/middlewares/metrics-recorder';
 import { ErrorMiddleware } from 'core/http/middlewares/error';
+import { CorsMiddleware } from './middlewares/cors';
 
 class App {
   private server: Server;
@@ -30,10 +31,12 @@ class App {
         return;
       }
 
-      await ErrorMiddleware.handle(request, response, async () => {
-        await MetricsRecorderMiddleware.handle(request, response, async () => {
-          LoggerMiddleware.handle(request, response);
-          await router.resolve(request, response);
+      await CorsMiddleware.handle(request, response, async () => {
+        await ErrorMiddleware.handle(request, response, async () => {
+          await MetricsRecorderMiddleware.handle(request, response, async () => {
+            LoggerMiddleware.handle(request, response);
+            await router.resolve(request, response);
+          });
         });
       });
     } catch (error) {

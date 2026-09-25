@@ -1,5 +1,5 @@
 import { InvalidShoppingListId } from 'modules/item/domain/errors/invalid-shopping-list-id';
-import { PostgresItemListRepository } from 'modules/item/infrastructure/database/postgres-item-list-repository';
+import { IItemList } from 'modules/item/domain/repositories/item-list-repository';
 import { IDeleteItemByIdDTO } from './delete-item-by-id-dto';
 import { InvalidItemId } from 'modules/item/domain/errors/invalid-item-id';
 import { ItemNotFound } from 'modules/item/domain/errors/item-not-found';
@@ -9,7 +9,7 @@ import { IShoppingList } from 'modules/shopping/domain/repositories/shopping-lis
 
 class DeleteItemByIdUseCase {
   constructor(
-    private itemListRepository: PostgresItemListRepository,
+    private itemListRepository: IItemList,
     private shoppingListRepository: IShoppingList,
   ) {}
 

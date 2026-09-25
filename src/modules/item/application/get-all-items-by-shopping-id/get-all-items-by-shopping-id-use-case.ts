@@ -1,6 +1,6 @@
 import { ItemList } from 'modules/item/domain/entities/item-list';
 import { InvalidShoppingListId } from 'modules/item/domain/errors/invalid-shopping-list-id';
-import { PostgresItemListRepository } from 'modules/item/infrastructure/database/postgres-item-list-repository';
+import { IItemList } from 'modules/item/domain/repositories/item-list-repository';
 import { IGetAllItemsByShoppingIdDTO } from './get-all-items-by-shopping-id-dto';
 import { ListNotFound } from 'modules/shopping/domain/errors/list-not-found';
 import { NoPermission } from 'shared/errors/no-permission';
@@ -8,7 +8,7 @@ import { IShoppingList } from 'modules/shopping/domain/repositories/shopping-lis
 
 class GetAllItemsByShoppingIdUseCase {
   constructor(
-    private itemListRepository: PostgresItemListRepository,
+    private itemListRepository: IItemList,
     private shoppingListRepository: IShoppingList,
   ) {}
 

@@ -32,7 +32,7 @@ class UserRoutes {
   static register(router: Router): void {
     router.register({
       method: 'GET',
-      path: '/users',
+      path: '/users/me',
       middlewares: [EnsureAuthenticatedMiddleware.handle],
       handler: (req: IncomingMessage, res: ServerResponse) =>
         UserRoutes.getUserController.handle(req, res),
@@ -47,7 +47,7 @@ class UserRoutes {
 
     router.register({
       method: 'DELETE',
-      path: '/users',
+      path: '/users/me',
       middlewares: [EnsureAuthenticatedMiddleware.handle],
       handler: (req: IncomingMessage, res: ServerResponse) =>
         UserRoutes.deleteUserByIdController.handle(req, res),
@@ -55,7 +55,7 @@ class UserRoutes {
 
     router.register({
       method: 'PUT',
-      path: '/users',
+      path: '/users/me',
       middlewares: [EnsureAuthenticatedMiddleware.handle],
       handler: (req: IncomingMessage, res: ServerResponse) =>
         UserRoutes.updateUserController.handle(req, res),

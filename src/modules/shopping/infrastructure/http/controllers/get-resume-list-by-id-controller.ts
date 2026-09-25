@@ -1,6 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { ReplyResponder } from 'core/http/utils/reply';
 import { GetResumeByIdUseCase } from 'modules/shopping/application/get-resume-list-by-id/get-resume-list-by-id-use-case';
+import { GetResumeByIdViewModel } from 'modules/shopping/application/get-resume-list-by-id/get-resume-list-by-id-view-model';
 
 class GetResumeByIdController {
   constructor(private getResumeByIdUseCase: GetResumeByIdUseCase) {}
@@ -17,7 +18,7 @@ class GetResumeByIdController {
       listId,
     });
 
-    new ReplyResponder(response).ok(result);
+    new ReplyResponder(response).ok(GetResumeByIdViewModel.toHTTP(result));
   }
 }
 
