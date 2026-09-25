@@ -1,14 +1,18 @@
 import { ItemList } from 'modules/item/domain/entities/item-list';
-import { IGetAllItemsByShoppingIdDTO } from 'modules/item/application/get-all-items-by-shopping-id/get-all-items-by-shopping-id-dto';
-import { IDeleteItemByIdDTO } from 'modules/item/application/delete-item-by-id/delete-item-by-id-dto';
-import { IGetItemByIdDTO } from 'modules/item/application/get-item-by-id/get-item-by-id-dto';
+import { ItemStatus } from 'modules/item/domain/value-objects/item-status';
 
 interface IItemList {
   create(data: ItemList, shoppingListId: string): Promise<ItemList>;
-  getAllItemsByShoppingId(data: IGetAllItemsByShoppingIdDTO): Promise<ItemList[]>;
-  deleteItemById(data: IDeleteItemByIdDTO): Promise<void>;
-  getItemById(data: IGetItemByIdDTO): Promise<ItemList | null>;
-  updateItemById(data: Partial<ItemList>): Promise<ItemList>;
+  getAllItemsByShoppingId(shoppingListId: string): Promise<ItemList[]>;
+  deleteItemById(itemId: string, shoppingListId: string): Promise<void>;
+  getItemById(itemId: string, shoppingListId: string): Promise<ItemList | null>;
+  updateItemById(data: {
+    itemId: string;
+    name?: string;
+    status?: ItemStatus;
+    amount?: number;
+    quantity?: number;
+  }): Promise<ItemList>;
 }
 
 export { IItemList };

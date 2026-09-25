@@ -9,20 +9,33 @@ describe('UpdateListByIdUseCase', () => {
   let shoppingListRepository: { getListById: jest.Mock; updateListById: jest.Mock };
   let updateListByIdUseCase: UpdateListByIdUseCase;
 
+  const now = new Date();
+
   beforeEach(() => {
     shoppingListRepository = {
       getListById: jest.fn(),
       updateListById: jest.fn(),
     };
-
     updateListByIdUseCase = new UpdateListByIdUseCase(
       shoppingListRepository as unknown as IShoppingList,
     );
   });
 
   it('should update a shopping list successfully', async () => {
-    const mockList = new ShoppingList('user-123', 'Groceries', new Date(), new Date());
-    const updatedList = new ShoppingList('user-123', 'Updated Groceries', new Date(), new Date());
+    const mockList = ShoppingList.reconstitute({
+      id: 'list-123',
+      userId: 'user-123',
+      name: 'Groceries',
+      createdAt: now,
+      updatedAt: now,
+    });
+    const updatedList = ShoppingList.reconstitute({
+      id: 'list-123',
+      userId: 'user-123',
+      name: 'Updated Groceries',
+      createdAt: now,
+      updatedAt: now,
+    });
 
     shoppingListRepository.getListById.mockResolvedValue(mockList);
     shoppingListRepository.updateListById.mockResolvedValue(updatedList);
@@ -46,24 +59,22 @@ describe('UpdateListByIdUseCase', () => {
     shoppingListRepository.getListById.mockResolvedValue(null);
 
     await expect(
-      updateListByIdUseCase.execute({
-        listId: 'list-999',
-        name: 'New Name',
-        userId: 'user-123',
-      }),
+      updateListByIdUseCase.execute({ listId: 'list-999', name: 'New Name', userId: 'user-123' }),
     ).rejects.toThrow(ListNotFound);
   });
 
   it('should throw InvalidListName if name is missing', async () => {
-    const mockList = new ShoppingList('user-123', 'Groceries', new Date(), new Date());
+    const mockList = ShoppingList.reconstitute({
+      id: 'list-123',
+      userId: 'user-123',
+      name: 'Groceries',
+      createdAt: now,
+      updatedAt: now,
+    });
     shoppingListRepository.getListById.mockResolvedValue(mockList);
 
     await expect(
-      updateListByIdUseCase.execute({
-        listId: 'list-123',
-        name: '   ',
-        userId: 'user-123',
-      }),
+      updateListByIdUseCase.execute({ listId: 'list-123', name: '   ', userId: 'user-123' }),
     ).rejects.toThrow(InvalidListName);
   });
 

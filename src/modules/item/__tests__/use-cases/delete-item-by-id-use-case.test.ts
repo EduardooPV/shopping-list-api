@@ -5,8 +5,6 @@ import { InvalidItemId } from 'modules/item/domain/errors/invalid-item-id';
 import { ItemNotFound } from 'modules/item/domain/errors/item-not-found';
 import { ListNotFound } from 'modules/shopping/domain/errors/list-not-found';
 import { NoPermission } from 'shared/errors/no-permission';
-import { PostgresItemListRepository } from 'modules/item/infrastructure/database/postgres-item-list-repository';
-import { PostgresShoppingListRepository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
 
 describe('DeleteItemByIdUseCase', () => {
   let itemListRepository: { getItemById: jest.Mock; deleteItemById: jest.Mock };
@@ -14,16 +12,9 @@ describe('DeleteItemByIdUseCase', () => {
   let deleteItemByIdUseCase: DeleteItemByIdUseCase;
 
   beforeEach(() => {
-    itemListRepository = {
-      getItemById: jest.fn(),
-      deleteItemById: jest.fn(),
-    };
+    itemListRepository = { getItemById: jest.fn(), deleteItemById: jest.fn() };
     shoppingListRepository = { getListById: jest.fn() };
-
-    deleteItemByIdUseCase = new DeleteItemByIdUseCase(
-      itemListRepository as unknown as PostgresItemListRepository,
-      shoppingListRepository as unknown as PostgresShoppingListRepository,
-    );
+    deleteItemByIdUseCase = new DeleteItemByIdUseCase(itemListRepository, shoppingListRepository);
   });
 
   it('should delete an item successfully', async () => {
@@ -41,15 +32,8 @@ describe('DeleteItemByIdUseCase', () => {
     });
 
     expect(shoppingListRepository.getListById).toHaveBeenCalledWith('list-123');
-    expect(itemListRepository.getItemById).toHaveBeenCalledWith({
-      shoppingListId: 'list-123',
-      itemId: 'item-123',
-    });
-    expect(itemListRepository.deleteItemById).toHaveBeenCalledWith({
-      userId: 'user-123',
-      shoppingListId: 'list-123',
-      itemId: 'item-123',
-    });
+    expect(itemListRepository.getItemById).toHaveBeenCalledWith('item-123', 'list-123');
+    expect(itemListRepository.deleteItemById).toHaveBeenCalledWith('item-123', 'list-123');
   });
 
   it('should throw InvalidShoppingListId if shoppingListId is missing', async () => {

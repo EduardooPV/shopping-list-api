@@ -9,21 +9,19 @@ import { Pagination } from 'shared/utils/pagination-response';
 
 class PostgresShoppingListRepository implements IShoppingList {
   async create(data: ShoppingList): Promise<ShoppingList> {
-    return await prisma.shoppingList.create({
+    const created = await prisma.shoppingList.create({
       data: {
+        id: data.id,
         userId: data.userId,
         name: data.name,
-        id: data.id,
       },
     });
+    return ShoppingList.reconstitute(created);
   }
 
   async getListById(id?: string): Promise<ShoppingList | null> {
-    return await prisma.shoppingList.findUnique({
-      where: {
-        id,
-      },
-    });
+    const data = await prisma.shoppingList.findUnique({ where: { id } });
+    return data ? ShoppingList.reconstitute(data) : null;
   }
 
   async getAllLists({
@@ -34,71 +32,28 @@ class PostgresShoppingListRepository implements IShoppingList {
     const skip = (page - 1) * perPage;
 
     const [lists, total] = await Promise.all([
-      prisma.shoppingList.findMany({
-        where: {
-          userId: userId,
-        },
-        skip,
-        take: perPage,
-      }),
-      prisma.shoppingList.count({
-        where: { userId },
-      }),
+      prisma.shoppingList.findMany({ where: { userId }, skip, take: perPage }),
+      prisma.shoppingList.count({ where: { userId } }),
     ]);
 
-    return Pagination.build({ items: lists, total, page, perPage });
+    return Pagination.build({
+      items: lists.map(ShoppingList.reconstitute),
+      total,
+      page,
+      perPage,
+    });
   }
 
   async deleteListById(data: IDeleteListByIdDTO): Promise<void> {
-    await prisma.shoppingList.delete({
-      where: {
-        userId: data.userId,
-        id: data.id,
-      },
-    });
+    await prisma.shoppingList.delete({ where: { id: data.id, userId: data.userId } });
   }
 
   async updateListById(data: IUpdateListByIdDTO): Promise<ShoppingList> {
-    return await prisma.shoppingList.update({
-      where: {
-        id: data.listId,
-        userId: data.userId,
-      },
-      data: {
-        name: data.name,
-      },
+    const updated = await prisma.shoppingList.update({
+      where: { id: data.listId, userId: data.userId },
+      data: { name: data.name },
     });
-  }
-
-  async getSumAmountItemsById(shoppingListId?: string): Promise<number> {
-    const result = await prisma.itemList.aggregate({
-      where: {
-        shoppingListId,
-      },
-      _sum: {
-        amount: true,
-      },
-    });
-
-    return result._sum?.amount ?? 0;
-  }
-
-  async getDoneItemsById(shoppingListId?: string): Promise<number> {
-    return await prisma.itemList.count({
-      where: {
-        shoppingListId,
-        status: 'done',
-      },
-    });
-  }
-
-  async getPendingItemsById(shoppingListId?: string): Promise<number> {
-    return await prisma.itemList.count({
-      where: {
-        shoppingListId,
-        status: 'pending',
-      },
-    });
+    return ShoppingList.reconstitute(updated);
   }
 }
 

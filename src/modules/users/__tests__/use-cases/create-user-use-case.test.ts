@@ -38,7 +38,14 @@ describe('CreateUserUseCase', () => {
 
   it('should throw UserAlreadyExistsError if user already exists', async () => {
     const userData = { name: 'Jane Doe', email: 'jane@example.com', password: 'abcdef' };
-    userRepository.findByEmail.mockResolvedValue(new User('Jane', 'jane@example.com', 'hashed'));
+    userRepository.findByEmail.mockResolvedValue(
+      User.reconstitute({
+        id: 'id-1',
+        name: 'Jane',
+        email: 'jane@example.com',
+        password: 'hashed',
+      }),
+    );
 
     await expect(createUserUseCase.execute(userData)).rejects.toThrow(UserAlreadyExistsError);
   });
@@ -53,9 +60,7 @@ describe('CreateUserUseCase', () => {
 
     expect(bcryptjs.hash).toHaveBeenCalledWith('plain123', BCRYPT_COST);
     expect(userRepository.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        password: hashedPassword,
-      }),
+      expect.objectContaining({ password: hashedPassword }),
     );
   });
 });

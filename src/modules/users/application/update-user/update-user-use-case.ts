@@ -1,8 +1,8 @@
+import { User } from 'modules/users/domain/entities/user';
 import { InvalidUserIdError } from 'modules/users/domain/errors/invalid-user-id-error';
 import { UserNotFound } from 'modules/users/domain/errors/user-not-found';
 import { IUsersRepository } from 'modules/users/domain/repositories/user-repository';
 import { IUpdateUserRequestDTO } from './update-user-dto';
-import { User } from 'modules/users/domain/entities/user';
 import bcryptjs from 'bcryptjs';
 import { BCRYPT_COST } from 'shared/constants/auth';
 
@@ -16,11 +16,15 @@ class UpdateUserUseCase {
 
     if (!userExist) throw new UserNotFound();
 
-    if (data.password) {
-      data = { ...data, password: await bcryptjs.hash(data.password, BCRYPT_COST) };
-    }
+    const password = data.password
+      ? await bcryptjs.hash(data.password, BCRYPT_COST)
+      : data.password;
 
-    const newUser = await this.userRepository.updateById(data);
+    const newUser = await this.userRepository.updateById({
+      id: data.id,
+      name: data.name,
+      password,
+    });
 
     if (!newUser) throw new UserNotFound();
 

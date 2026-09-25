@@ -5,13 +5,10 @@ import jsonwebtoken from 'jsonwebtoken';
 import { env } from 'shared/utils/env';
 import { RefreshTokenUseCase } from 'modules/auth/application/refresh-token/refresh-token-use-case';
 
-const mockUserRepository: unknown = {
-  findById: jest.fn(),
+const mockAuthRepository = {
+  findByIdWithToken: jest.fn(),
   updateRefreshToken: jest.fn(),
-  findByEmail: jest.fn(),
-  create: jest.fn(),
-  deleteById: jest.fn(),
-  updateById: jest.fn(),
+  findByEmailWithPassword: jest.fn(),
 };
 
 describe('RefreshTokenUseCase', () => {
@@ -19,7 +16,7 @@ describe('RefreshTokenUseCase', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    useCase = new RefreshTokenUseCase(mockUserRepository);
+    useCase = new RefreshTokenUseCase(mockAuthRepository);
   });
 
   it('should successfully refresh tokens when given a valid refresh token', async () => {
@@ -34,7 +31,7 @@ describe('RefreshTokenUseCase', () => {
       .mockReturnValueOnce(newAccessToken)
       .mockReturnValueOnce(newRefreshToken);
 
-    mockUserRepository.findById.mockResolvedValueOnce({
+    mockAuthRepository.findByIdWithToken.mockResolvedValueOnce({
       id: userId,
       refreshToken: oldRefreshToken,
     });
@@ -43,11 +40,8 @@ describe('RefreshTokenUseCase', () => {
 
     expect(jsonwebtoken.verify).toHaveBeenCalledWith(oldRefreshToken, env.refreshSecretJwt);
     expect(jsonwebtoken.sign).toHaveBeenCalledTimes(2);
-    expect(mockUserRepository.updateRefreshToken).toHaveBeenCalledWith(userId, newRefreshToken);
-    expect(result).toEqual({
-      accessToken: newAccessToken,
-      refreshToken: newRefreshToken,
-    });
+    expect(mockAuthRepository.updateRefreshToken).toHaveBeenCalledWith(userId, newRefreshToken);
+    expect(result).toEqual({ accessToken: newAccessToken, refreshToken: newRefreshToken });
   });
 
   it('should throw InvalidRefreshToken if token verification fails', async () => {
@@ -59,24 +53,22 @@ describe('RefreshTokenUseCase', () => {
   });
 
   it('should throw UserNotFound if user does not exist', async () => {
-    const userId = 'nonexistent-user';
-    jest.spyOn(jsonwebtoken, 'verify').mockReturnValueOnce({ sub: userId } as unknown);
-    mockUserRepository.findById.mockResolvedValueOnce(null);
+    jest.spyOn(jsonwebtoken, 'verify').mockReturnValueOnce({ sub: 'nonexistent-user' } as unknown);
+    mockAuthRepository.findByIdWithToken.mockResolvedValueOnce(null);
 
     await expect(useCase.execute('valid-token')).rejects.toBeInstanceOf(UserNotFound);
   });
 
   it('should throw InvalidRefreshToken if stored token does not match', async () => {
     const userId = 'user-123';
-    const providedToken = 'provided-refresh-token';
-    const storedToken = 'different-token';
-
     jest.spyOn(jsonwebtoken, 'verify').mockReturnValueOnce({ sub: userId } as unknown);
-    mockUserRepository.findById.mockResolvedValueOnce({
+    mockAuthRepository.findByIdWithToken.mockResolvedValueOnce({
       id: userId,
-      refreshToken: storedToken,
+      refreshToken: 'different-token',
     });
 
-    await expect(useCase.execute(providedToken)).rejects.toBeInstanceOf(InvalidRefreshToken);
+    await expect(useCase.execute('provided-refresh-token')).rejects.toBeInstanceOf(
+      InvalidRefreshToken,
+    );
   });
 });

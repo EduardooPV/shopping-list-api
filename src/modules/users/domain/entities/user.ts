@@ -6,16 +6,22 @@ class User {
   public readonly name: string;
   public readonly email: string;
   public readonly password: string;
-  public readonly refreshToken?: string | null;
 
-  constructor(name: string, email: string, password: string, refreshToken?: string | null) {
-    const userName = new UserName(name);
-    this.name = userName.getValue();
+  private constructor(id: string, name: string, email: string, password: string) {
+    this.id = id;
+    this.name = name;
     this.email = email;
     this.password = password;
-    this.refreshToken = refreshToken;
-    this.id = crypto.randomUUID();
     Object.freeze(this);
+  }
+
+  static create(name: string, email: string, password: string): User {
+    const userName = new UserName(name);
+    return new User(crypto.randomUUID(), userName.getValue(), email, password);
+  }
+
+  static reconstitute(raw: { id: string; name: string; email: string; password: string }): User {
+    return new User(raw.id, raw.name, raw.email, raw.password);
   }
 }
 

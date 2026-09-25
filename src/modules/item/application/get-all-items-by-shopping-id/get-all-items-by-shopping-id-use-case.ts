@@ -17,17 +17,11 @@ class GetAllItemsByShoppingIdUseCase {
 
     const shoppingListExist = await this.shoppingListRepository.getListById(data.shoppingListId);
 
-    if (!shoppingListExist) {
-      throw new ListNotFound();
-    }
+    if (!shoppingListExist) throw new ListNotFound();
 
-    if (shoppingListExist.userId !== data.userId) {
-      throw new NoPermission();
-    }
+    if (shoppingListExist.userId !== data.userId) throw new NoPermission();
 
-    return await this.itemListRepository.getAllItemsByShoppingId({
-      shoppingListId: data.shoppingListId,
-    });
+    return await this.itemListRepository.getAllItemsByShoppingId(data.shoppingListId);
   }
 }
 

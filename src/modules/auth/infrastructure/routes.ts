@@ -1,7 +1,7 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { PostgresUsersRepository } from 'modules/users/infrastructure/database/postgres-users-repository';
+import { IAuthUserRepository } from 'modules/auth/domain/repositories/auth-user-repository';
 import { LoginUserUseCase } from 'modules/auth/application/login-user/login-user-use-case';
-
 import { LoginUserController } from 'modules/auth/infrastructure/http/controllers/login-user-controller';
 import { RefreshTokenController } from 'modules/auth/infrastructure/http/controllers/refresh-token-controller';
 import { RefreshTokenUseCase } from 'modules/auth/application/refresh-token/refresh-token-use-case';
@@ -10,16 +10,16 @@ import { LogoutUserUseCase } from 'modules/auth/application/logout-user/logout-u
 import { Router } from 'core/http/router';
 
 class AuthRoutes {
-  private static usersRepository = new PostgresUsersRepository();
+  private static authRepository: IAuthUserRepository = new PostgresUsersRepository();
 
   private static loginUserController = new LoginUserController(
-    new LoginUserUseCase(AuthRoutes.usersRepository),
+    new LoginUserUseCase(AuthRoutes.authRepository),
   );
   private static refreshTokenController = new RefreshTokenController(
-    new RefreshTokenUseCase(AuthRoutes.usersRepository),
+    new RefreshTokenUseCase(AuthRoutes.authRepository),
   );
   private static logoutUserController = new LogoutUserController(
-    new LogoutUserUseCase(AuthRoutes.usersRepository),
+    new LogoutUserUseCase(AuthRoutes.authRepository),
   );
 
   static register(router: Router): void {

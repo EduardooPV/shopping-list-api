@@ -8,6 +8,7 @@ class HttpStatusMapper {
 
     // --- Users ---
     INVALID_USER_ID: 400,
+    INVALID_USER_NAME: 422,
     USER_ALREADY_EXISTS: 409,
     USER_NOT_FOUND: 404,
 

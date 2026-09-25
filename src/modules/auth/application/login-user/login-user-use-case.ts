@@ -4,13 +4,13 @@ import { IAuthenticateUserRequestDTO } from './login-user-dto';
 import { InvalidCredentials } from 'modules/auth/domain/errors/invalid-credentials';
 import { IRefreshTokenResponseDTO } from 'modules/auth/application/refresh-token/refresh-token-dto';
 import { env } from 'shared/utils/env';
-import { IUsersRepository } from 'modules/users/domain/repositories/user-repository';
+import { IAuthUserRepository } from 'modules/auth/domain/repositories/auth-user-repository';
 
 class LoginUserUseCase {
-  constructor(private userRepository: IUsersRepository) {}
+  constructor(private authRepository: IAuthUserRepository) {}
 
   async execute(data: IAuthenticateUserRequestDTO): Promise<IRefreshTokenResponseDTO> {
-    const user = await this.userRepository.findByEmail(data.email);
+    const user = await this.authRepository.findByEmailWithPassword(data.email);
     if (!user) throw new InvalidCredentials();
 
     const isPasswordMatch = await bcryptjs.compare(data.password, user.password);
@@ -24,7 +24,7 @@ class LoginUserUseCase {
       expiresIn: env.refreshTokenExpiration,
     } as jsonwebtoken.SignOptions);
 
-    await this.userRepository.updateRefreshToken(user.id, refreshToken);
+    await this.authRepository.updateRefreshToken(user.id, refreshToken);
 
     return { accessToken, refreshToken };
   }

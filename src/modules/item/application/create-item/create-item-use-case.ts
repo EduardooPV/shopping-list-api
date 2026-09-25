@@ -1,5 +1,5 @@
 import { ItemList } from 'modules/item/domain/entities/item-list';
-import { InvalidItemName } from 'modules/item/domain/errors/invalid-item-name';
+import { ItemStatus } from 'modules/item/domain/value-objects/item-status';
 import { InvalidShoppingListId } from 'modules/item/domain/errors/invalid-shopping-list-id';
 import { IItemList } from 'modules/item/domain/repositories/item-list-repository';
 import { ICreateItemRequestDTO } from './create-item-dto';
@@ -16,27 +16,17 @@ class CreateItemUseCase {
   async execute(data: ICreateItemRequestDTO): Promise<ItemList> {
     if (data.shoppingListId == null) throw new InvalidShoppingListId();
 
-    if (!data.name || data.name.trim().length === 0) {
-      throw new InvalidItemName({ reason: 'missing' });
-    }
-
     const shoppingListExist = await this.shoppingListRepository.getListById(data.shoppingListId);
 
-    if (!shoppingListExist) {
-      throw new ListNotFound();
-    }
+    if (!shoppingListExist) throw new ListNotFound();
 
-    if (shoppingListExist.userId !== data.userId) {
-      throw new NoPermission();
-    }
+    if (shoppingListExist.userId !== data.userId) throw new NoPermission();
 
-    const item = new ItemList(
+    const item = ItemList.create(
       data.name,
-      data.status,
+      (data.status as ItemStatus) ?? ItemStatus.Pending,
       data.quantity,
       data.amount,
-      new Date(),
-      new Date(),
     );
 
     return await this.itemListRepository.create(item, data.shoppingListId);

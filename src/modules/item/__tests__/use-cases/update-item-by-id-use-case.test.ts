@@ -4,42 +4,36 @@ import { InvalidShoppingListId } from 'modules/item/domain/errors/invalid-shoppi
 import { ListNotFound } from 'modules/shopping/domain/errors/list-not-found';
 import { NoPermission } from 'shared/errors/no-permission';
 import { ItemNotFound } from 'modules/item/domain/errors/item-not-found';
-import { PostgresItemListRepository } from 'modules/item/infrastructure/database/postgres-item-list-repository';
-import { PostgresShoppingListRepository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
 import { ItemList } from 'modules/item/domain/entities/item-list';
+import { ItemStatus } from 'modules/item/domain/value-objects/item-status';
 
 describe('UpdateItemByIdUseCase', () => {
-  let itemListRepository: {
-    getItemById: jest.Mock;
-    updateItemById: jest.Mock;
-  };
+  let itemListRepository: { getItemById: jest.Mock; updateItemById: jest.Mock };
   let shoppingListRepository: { getListById: jest.Mock };
   let updateItemByIdUseCase: UpdateItemByIdUseCase;
 
   beforeEach(() => {
-    itemListRepository = {
-      getItemById: jest.fn(),
-      updateItemById: jest.fn(),
-    };
-
-    shoppingListRepository = {
-      getListById: jest.fn(),
-    };
-
-    updateItemByIdUseCase = new UpdateItemByIdUseCase(
-      itemListRepository as unknown as PostgresItemListRepository,
-      shoppingListRepository as unknown as PostgresShoppingListRepository,
-    );
+    itemListRepository = { getItemById: jest.fn(), updateItemById: jest.fn() };
+    shoppingListRepository = { getListById: jest.fn() };
+    updateItemByIdUseCase = new UpdateItemByIdUseCase(itemListRepository, shoppingListRepository);
   });
 
   it('should update an item successfully', async () => {
-    const mockItem = new ItemList('Bread', 'pending', 1, 5, new Date(), new Date());
+    const mockItem = ItemList.reconstitute({
+      id: 'item-456',
+      name: 'Bread',
+      status: ItemStatus.Done,
+      quantity: 2,
+      amount: 10,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
     const data = {
       shoppingListId: 'list-123',
       itemId: 'item-456',
       userId: 'user-123',
       name: 'Bread',
-      status: 'done',
+      status: ItemStatus.Done,
       quantity: 2,
       amount: 10,
     };
@@ -51,20 +45,20 @@ describe('UpdateItemByIdUseCase', () => {
     const result = await updateItemByIdUseCase.execute(data);
 
     expect(shoppingListRepository.getListById).toHaveBeenCalledWith('list-123');
-    expect(itemListRepository.getItemById).toHaveBeenCalledWith({
-      shoppingListId: 'list-123',
+    expect(itemListRepository.getItemById).toHaveBeenCalledWith('item-456', 'list-123');
+    expect(itemListRepository.updateItemById).toHaveBeenCalledWith({
       itemId: 'item-456',
+      name: 'Bread',
+      status: ItemStatus.Done,
+      amount: 10,
+      quantity: 2,
     });
-    expect(itemListRepository.updateItemById).toHaveBeenCalledWith(data);
     expect(result).toEqual(mockItem);
   });
 
   it('should throw InvalidShoppingListId if shoppingListId is missing', async () => {
     await expect(
-      updateItemByIdUseCase.execute({
-        shoppingListId: null,
-        userId: 'user-123',
-      }),
+      updateItemByIdUseCase.execute({ shoppingListId: null, userId: 'user-123' }),
     ).rejects.toThrow(InvalidShoppingListId);
   });
 

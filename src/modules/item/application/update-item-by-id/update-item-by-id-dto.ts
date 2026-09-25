@@ -1,10 +1,12 @@
+import { ItemStatus } from 'modules/item/domain/value-objects/item-status';
+
 interface IUpdateItemByIdRequestDTO {
   shoppingListId?: string;
   itemId?: string;
   userId?: string;
 
   name?: string;
-  status?: string;
+  status?: ItemStatus;
   amount?: number;
   quantity?: number;
 }
@@ -15,7 +17,7 @@ interface IUpdateItemByIdDTO {
   userId?: string;
 
   name?: string;
-  status?: string;
+  status?: ItemStatus;
   amount?: number;
   quantity?: number;
 }

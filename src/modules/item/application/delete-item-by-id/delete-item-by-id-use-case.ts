@@ -15,27 +15,19 @@ class DeleteItemByIdUseCase {
 
   async execute(data: IDeleteItemByIdDTO): Promise<void> {
     if (data.shoppingListId == null) throw new InvalidShoppingListId();
-
     if (data.itemId == null) throw new InvalidItemId();
 
     const shoppingListExist = await this.shoppingListRepository.getListById(data.shoppingListId);
 
-    if (!shoppingListExist) {
-      throw new ListNotFound();
-    }
+    if (!shoppingListExist) throw new ListNotFound();
 
-    if (shoppingListExist.userId !== data.userId) {
-      throw new NoPermission();
-    }
+    if (shoppingListExist.userId !== data.userId) throw new NoPermission();
 
-    const itemExist = await this.itemListRepository.getItemById({
-      shoppingListId: data.shoppingListId,
-      itemId: data.itemId,
-    });
+    const itemExist = await this.itemListRepository.getItemById(data.itemId, data.shoppingListId);
 
     if (itemExist === null) throw new ItemNotFound();
 
-    await this.itemListRepository.deleteItemById(data);
+    await this.itemListRepository.deleteItemById(data.itemId, data.shoppingListId);
   }
 }
 

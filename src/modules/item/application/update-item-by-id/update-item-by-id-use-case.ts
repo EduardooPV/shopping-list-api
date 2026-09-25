@@ -18,22 +18,21 @@ class UpdateItemByIdUseCase {
 
     const shoppingListExist = await this.shoppingListRepository.getListById(data.shoppingListId);
 
-    if (!shoppingListExist) {
-      throw new ListNotFound();
-    }
+    if (!shoppingListExist) throw new ListNotFound();
 
-    if (shoppingListExist.userId !== data.userId) {
-      throw new NoPermission();
-    }
+    if (shoppingListExist.userId !== data.userId) throw new NoPermission();
 
-    const itemExist = await this.itemListRepository.getItemById({
-      shoppingListId: data.shoppingListId,
-      itemId: data.itemId,
-    });
+    const itemExist = await this.itemListRepository.getItemById(data.itemId!, data.shoppingListId);
 
     if (itemExist === null) throw new ItemNotFound();
 
-    return await this.itemListRepository.updateItemById(data);
+    return await this.itemListRepository.updateItemById({
+      itemId: data.itemId!,
+      name: data.name,
+      status: data.status,
+      amount: data.amount,
+      quantity: data.quantity,
+    });
   }
 }
 

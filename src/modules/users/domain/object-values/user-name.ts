@@ -1,17 +1,19 @@
+import { InvalidUserNameError } from '../errors/invalid-user-name-error';
+
 class UserName {
   private readonly value: string;
 
   constructor(value: string) {
     if (!value || value.trim().length === 0) {
-      throw new Error('User name cannot be empty.');
+      throw new InvalidUserNameError({ reason: 'missing' });
     }
 
     if (value.trim().length < 2) {
-      throw new Error('User name must have at least 2 characters.');
+      throw new InvalidUserNameError({ reason: 'too_short' });
     }
 
     if (value.trim().length > 50) {
-      throw new Error('User name must not exceed 50 characters.');
+      throw new InvalidUserNameError({ reason: 'too_long' });
     }
 
     this.value = value.trim();
