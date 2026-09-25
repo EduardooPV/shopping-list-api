@@ -20,12 +20,15 @@
   <a href="#stack">Stack</a> ·
   <a href="#wireframes-e-fluxos">Wireframes e fluxos</a> ·
   <a href="#como-rodar">Como rodar</a> ·
-  <a href="#observabilidade">Observabilidade</a>
+  <a href="#observabilidade">Observabilidade</a> ·
+  <a href="docs/FRONTEND.md">Guia do frontend</a>
 </p>
 
 ---
 
 ## Sobre o projeto
+
+Backend de um gerenciador de listas de compras: usuários criam conta, montam listas, adicionam itens com nome, quantidade e valor, marcam itens como feitos e consultam um resumo com total gasto e contagem de pendentes/concluídos.
 
 API REST em Node.js construída **sem framework** (usando o módulo nativo `http`), agora totalmente estruturada em **classes e princípios de POO**.  
 O objetivo é compreender o funcionamento de baixo nível de uma API: ciclo de vida da requisição/resposta, roteamento manual, middlewares, tratamento centralizado de erros e autenticação com JWT + Refresh Token via cookie HttpOnly.  
