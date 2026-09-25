@@ -6,7 +6,7 @@ import { SubmitButton } from "../_components/submit-button";
 import { FormField } from "../_components/form-field";
 
 export default function RegisterPage() {
-  const [state, action, isPending] = useActionState(registerAction, null);
+  const [state, action] = useActionState(registerAction, null);
 
   return (
     <div className="flex flex-col flex-1 justify-center gap-8">

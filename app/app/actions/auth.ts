@@ -39,7 +39,7 @@ async function setAccessTokenCookie(token: string) {
 }
 
 export async function loginAction(
-  prevState: AuthState,
+  _AgoraprevState: AuthState,
   formData: FormData,
 ): Promise<AuthState> {
   const email = formData.get("email");
@@ -69,7 +69,7 @@ export async function loginAction(
 }
 
 export async function registerAction(
-  prevState: AuthState,
+  _AgoraprevState: AuthState,
   formData: FormData,
 ): Promise<AuthState> {
   const name = formData.get("name");
