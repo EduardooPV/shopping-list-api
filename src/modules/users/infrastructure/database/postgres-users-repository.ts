@@ -2,7 +2,6 @@ import { IUpdateUserRequestDTO } from 'modules/users/application/update-user/upd
 import { User } from 'modules/users/domain/entities/user';
 import { IUsersRepository } from 'modules/users/domain/repositories/user-repository';
 import { prisma } from 'core/database/prisma-client';
-import crypto from 'crypto';
 
 class PostgresUsersRepository implements IUsersRepository {
   async create(user: User): Promise<void> {
@@ -11,7 +10,7 @@ class PostgresUsersRepository implements IUsersRepository {
         name: user.name,
         email: user.email,
         password: user.password,
-        id: crypto.randomUUID(),
+        id: user.id,
       },
     });
   }

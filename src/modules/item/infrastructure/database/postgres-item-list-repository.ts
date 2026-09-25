@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { prisma } from 'core/database/prisma-client';
 import { ItemList } from 'modules/item/domain/entities/item-list';
 import { IItemList } from 'modules/item/domain/repositories/item-list-repository';
@@ -12,10 +11,11 @@ class PostgresItemListRepository implements IItemList {
     return await prisma.itemList.create({
       data: {
         name: data.name,
-        status: 'pending',
+        status: data.status,
         shoppingListId: shoppingListId,
-        amount: 0,
-        id: crypto.randomUUID(),
+        amount: data.amount,
+        quantity: data.quantity,
+        id: data.id,
       },
     });
   }

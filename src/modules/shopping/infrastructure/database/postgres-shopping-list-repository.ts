@@ -1,6 +1,5 @@
 import { prisma } from 'core/database/prisma-client';
 import { ShoppingList } from 'modules/shopping/domain/entities/shopping-list';
-import crypto from 'crypto';
 import { IShoppingList } from 'modules/shopping/domain/repositories/shopping-list-repository';
 import { IGetAllListsRequestDTO } from 'modules/shopping/application/get-all-lists/get-all-lists-dto';
 import { IDeleteListByIdDTO } from 'modules/shopping/application/delete-list-by-id/delete-list-by-id-dto';
@@ -14,7 +13,7 @@ class PostgresShoppingListRespository implements IShoppingList {
       data: {
         userId: data.userId,
         name: data.name,
-        id: crypto.randomUUID(),
+        id: data.id,
       },
     });
   }
