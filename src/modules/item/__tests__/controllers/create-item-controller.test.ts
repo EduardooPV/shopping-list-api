@@ -25,7 +25,9 @@ describe('CreateItemController', () => {
       end: jest.fn(),
     };
 
-    jest.spyOn(BodyParser, 'parse').mockResolvedValue({ name: 'Bananas' });
+    jest
+      .spyOn(BodyParser, 'parse')
+      .mockResolvedValue({ name: 'Bananas', quantity: 2, amount: 3.5 });
     jest.spyOn(CreateItemViewModel, 'toHTTP').mockReturnValue({
       id: 'item-1',
       name: 'Bananas',
@@ -49,6 +51,9 @@ describe('CreateItemController', () => {
     expect(BodyParser.parse).toHaveBeenCalledWith(mockRequest);
     expect(createItemUseCase.execute).toHaveBeenCalledWith({
       name: 'Bananas',
+      quantity: 2,
+      amount: 3.5,
+      status: 'pending',
       shoppingListId: 'list-456',
       userId: 'user-123',
     });

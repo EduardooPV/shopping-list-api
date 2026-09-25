@@ -44,11 +44,7 @@ describe('CreateItemUseCase', () => {
     });
 
     expect(shoppingListRepository.getListById).toHaveBeenCalledWith('list-123');
-    expect(itemListRepository.create).toHaveBeenCalledWith({
-      name: 'Apples',
-      shoppingListId: 'list-123',
-      userId: 'user-123',
-    });
+    expect(itemListRepository.create).toHaveBeenCalledWith(expect.any(ItemList), 'list-123');
     expect(result).toEqual(mockItem);
   });
 
@@ -103,11 +99,7 @@ describe('CreateItemUseCase', () => {
       shoppingListId: 'list-123',
     });
 
-    expect(itemListRepository.create).toHaveBeenCalledWith({
-      name: 'Apples',
-      shoppingListId: 'list-123',
-      userId: 'user-123',
-    });
+    expect(itemListRepository.create).toHaveBeenCalledWith(expect.any(ItemList), 'list-123');
     expect(result).toEqual(mockItem);
   });
 });

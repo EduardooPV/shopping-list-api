@@ -26,7 +26,7 @@ describe('UpdateUserController', () => {
 
     jest.spyOn(BodyParser, 'parse').mockResolvedValue({
       name: 'John Updated',
-      email: 'john.updated@example.com',
+      password: 'newpassword123',
     });
 
     jest.spyOn(UpdateUserViewModel, 'toHTTP').mockReturnValue({
@@ -53,7 +53,7 @@ describe('UpdateUserController', () => {
     expect(updateUserUseCase.execute).toHaveBeenCalledWith({
       id: 'user-123',
       name: 'John Updated',
-      email: 'john.updated@example.com',
+      password: 'newpassword123',
     });
     expect(UpdateUserViewModel.toHTTP).toHaveBeenCalledWith(mockUser);
     expect(ReplyResponder.prototype.ok).toHaveBeenCalledWith({

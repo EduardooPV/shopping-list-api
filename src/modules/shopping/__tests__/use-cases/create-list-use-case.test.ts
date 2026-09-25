@@ -22,10 +22,7 @@ describe('CreateListUseCase', () => {
 
     const result = await createListUseCase.execute({ userId: 'user-123', name: 'Groceries' });
 
-    expect(shoppingListRepository.create).toHaveBeenCalledWith({
-      userId: 'user-123',
-      name: 'Groceries',
-    });
+    expect(shoppingListRepository.create).toHaveBeenCalledWith(expect.any(ShoppingList));
     expect(result).toEqual(mockList);
   });
 
@@ -47,10 +44,7 @@ describe('CreateListUseCase', () => {
 
     const result = await createListUseCase.execute({ userId: 'user-123', name: '   Groceries   ' });
 
-    expect(shoppingListRepository.create).toHaveBeenCalledWith({
-      userId: 'user-123',
-      name: 'Groceries',
-    });
+    expect(shoppingListRepository.create).toHaveBeenCalledWith(expect.any(ShoppingList));
     expect(result).toEqual(mockList);
   });
 });

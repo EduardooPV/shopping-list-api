@@ -70,7 +70,7 @@ describe('LoginUserController', () => {
   it('should propagate errors from use case', async () => {
     const mockError = new Error('Invalid credentials');
 
-    BodyParser.parse.mockResolvedValueOnce({ email: 'test', password: 'wrong' });
+    BodyParser.parse.mockResolvedValueOnce({ email: 'test@example.com', password: 'wrong' });
     mockUseCase.execute.mockRejectedValueOnce(mockError);
 
     await expect(controller.handle(mockRequest, mockResponse)).rejects.toThrow(
