@@ -4,20 +4,22 @@ import { useActionState } from "react";
 import { registerAction } from "../../actions/auth";
 import { SubmitButton } from "../_components/submit-button";
 import { FormField } from "../_components/form-field";
+import { Logo } from "@/components/logo";
 
 export default function RegisterPage() {
   const [state, action] = useActionState(registerAction, null);
 
   return (
     <div className="flex flex-col flex-1 justify-center gap-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Criar conta</h1>
-        <p className="text-sm text-zinc-500">
-          Preencha os dados para se cadastrar
-        </p>
+      <div className="flex flex-col items-center gap-6">
+        <Logo />
+        <div className="flex flex-col items-center gap-1.5 text-center">
+          <h1 className="text-2xl font-bold tracking-tight">Criar conta</h1>
+          <p className="text-sm text-muted">Preencha os dados para se cadastrar</p>
+        </div>
       </div>
 
-      <form action={action} className="flex flex-col gap-4">
+      <form action={action} className="flex flex-col gap-3">
         <FormField
           name="name"
           type="text"
@@ -47,12 +49,14 @@ export default function RegisterPage() {
           <p className="text-sm text-red-500 text-center">{state.error}</p>
         )}
 
-        <SubmitButton label="Criar conta" />
+        <div className="mt-1">
+          <SubmitButton label="Criar conta" />
+        </div>
       </form>
 
-      <p className="text-center text-sm text-zinc-500">
+      <p className="text-center text-sm text-muted">
         Já tem conta?{" "}
-        <a href="/login" className="font-medium text-zinc-900">
+        <a href="/login" className="font-medium text-primary">
           Entrar
         </a>
       </p>

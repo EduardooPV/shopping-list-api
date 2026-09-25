@@ -3,40 +3,52 @@
 import { useActionState } from "react";
 import { loginAction } from "../../actions/auth";
 import { SubmitButton } from "../_components/submit-button";
+import { FormField } from "../_components/form-field";
+import { Logo } from "@/components/logo";
 
 export default function LoginPage() {
-  const [state, action, isPending] = useActionState(loginAction, null);
+  const [state, action] = useActionState(loginAction, null);
 
   return (
     <div className="flex flex-col flex-1 justify-center gap-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Bem vindo</h1>
-        <p className="text-sm text-zinc-500">
-          Entre na sua conta para continuar
-        </p>
+      <div className="flex flex-col items-center gap-6">
+        <Logo />
+        <div className="flex flex-col items-center gap-1.5 text-center">
+          <h1 className="text-2xl font-bold tracking-tight">
+            Bem-vindo de volta
+          </h1>
+          <p className="text-sm text-muted">
+            Entre na sua conta para continuar
+          </p>
+        </div>
       </div>
 
-      <form action={action} className="flex flex-col gap-4">
-        <input
+      <form action={action} className="flex flex-col gap-3">
+        <FormField
           name="email"
           type="email"
           placeholder="E-mail"
-          className="w-full rounded-2xl border border-zinc-200 px-4 py-4 outline-none focus:border-zinc-400"
+          error={state?.fieldErrors?.email}
         />
-        <input
+        <FormField
           name="password"
           type="password"
           placeholder="Senha"
-          className="w-full rounded-2xl border border-zinc-200 px-4 py-4 outline-none focus:border-zinc-400"
+          error={state?.fieldErrors?.password}
         />
-        {state?.error && <p className="text-sm text-red-500">{state.error}</p>}
 
-        <SubmitButton label="Entrar" />
+        {state?.error && (
+          <p className="text-sm text-red-500 text-center">{state.error}</p>
+        )}
+
+        <div className="mt-1">
+          <SubmitButton label="Entrar" />
+        </div>
       </form>
 
-      <p className="text-center text-sm text-zinc-500">
+      <p className="text-center text-sm text-muted">
         Não tem conta?{" "}
-        <a href="/register" className="font-medium text-zinc-900">
+        <a href="/register" className="font-medium text-primary">
           Criar conta
         </a>
       </p>
