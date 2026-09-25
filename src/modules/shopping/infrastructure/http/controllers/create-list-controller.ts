@@ -1,9 +1,13 @@
 import { IncomingMessage, ServerResponse } from 'http';
 import { CreateListUseCase } from 'modules/shopping/application/create-list/create-list-use-case';
 import { BodyParser } from 'core/http/utils/parse-body';
-import { ICreateListDTO } from 'modules/shopping/application/create-list/create-list-dto';
 import { CreateListViewModel } from 'modules/shopping/application/create-list/create-list-view-model';
 import { ReplyResponder } from 'core/http/utils/reply';
+import { z } from 'zod';
+
+const schema = z.object({
+  name: z.string().min(1).max(100),
+});
 
 class CreateListController {
   constructor(private createListUseCase: CreateListUseCase) {}
@@ -15,7 +19,7 @@ class CreateListController {
     const rawBody = await BodyParser.parse(request);
     const userId = request.userId;
 
-    const { name } = rawBody as ICreateListDTO;
+    const { name } = schema.parse(rawBody);
 
     const shoppingList = await this.createListUseCase.execute({
       name,
