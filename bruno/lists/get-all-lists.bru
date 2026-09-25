@@ -1,0 +1,24 @@
+meta {
+  name: Get All Lists
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/lists
+  body: none
+  auth: bearer
+}
+
+params:query {
+  page: 1
+  per_page: 10
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+vars:pre-request {
+  baseUrl: http://localhost:3333
+}

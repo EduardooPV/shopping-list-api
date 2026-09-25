@@ -1,0 +1,28 @@
+meta {
+  name: Update Item
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{baseUrl}}/lists/{{listId}}/items/{{itemId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": "Arroz integral",
+    "quantity": 3,
+    "amount": 15,
+    "status": "done"
+  }
+}

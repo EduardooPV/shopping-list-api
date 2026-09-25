@@ -1,0 +1,15 @@
+meta {
+  name: Delete Item
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/lists/{{listId}}/items/{{itemId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}

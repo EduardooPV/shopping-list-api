@@ -6,7 +6,7 @@ services:
     container_name: shopping_list_db
     restart: always
     ports:
-      - '5432:5432'
+      - '5433:5432'
     env_file:
       - .env
     volumes:
@@ -45,6 +45,8 @@ services:
       - '3333:3333'
     env_file:
       - .env
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/shopping_list_db
     depends_on:
       - postgres
     command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run dev"
