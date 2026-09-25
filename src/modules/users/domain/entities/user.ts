@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { UserName } from '../object-values/user-name';
 
 class User {
   public readonly id: string;
@@ -8,7 +9,8 @@ class User {
   public readonly refreshToken?: string | null;
 
   constructor(name: string, email: string, password: string, refreshToken?: string | null) {
-    this.name = name;
+    const userName = new UserName(name);
+    this.name = userName.getValue();
     this.email = email;
     this.password = password;
     this.refreshToken = refreshToken;
