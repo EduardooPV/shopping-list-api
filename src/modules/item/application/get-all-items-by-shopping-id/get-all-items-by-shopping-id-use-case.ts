@@ -3,7 +3,7 @@ import { InvalidShoppingListId } from 'modules/item/domain/errors/invalid-shoppi
 import { PostgresItemListRepository } from 'modules/item/infrastructure/database/postgres-item-list-repository';
 import { IGetAllItemsByShoppingIdDTO } from './get-all-items-by-shopping-id-dto';
 import { ListNotFound } from 'modules/shopping/domain/errors/list-not-found';
-import { NoPermission } from 'modules/../shared/errors/no-permission';
+import { NoPermission } from 'shared/errors/no-permission';
 import { IShoppingList } from 'modules/shopping/domain/repositories/shopping-list-repository';
 
 class GetAllItemsByShoppingIdUseCase {

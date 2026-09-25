@@ -12,9 +12,11 @@ import { UpdateListByIdUseCase } from '../../application/update-list-by-id/updat
 import { UpdateListByIdController } from './controllers/update-list-by-id-controller';
 import { GetResumeByIdUseCase } from '../../application/get-resume-list-by-id/get-resume-list-by-id-use-case';
 import { GetResumeByIdController } from './controllers/get-resume-list-by-id-controller';
+import { PostgresShoppingListStatsRespository } from '../database/postgres-shopping-list-stats-repository';
 
 class ShoppingRoutes {
   private static shoppingListRepository = new PostgresShoppingListRespository();
+  private static shoppingListStatsRepository = new PostgresShoppingListStatsRespository();
 
   private static createListUseCase = new CreateListUseCase(ShoppingRoutes.shoppingListRepository);
   private static createListController = new CreateListController(ShoppingRoutes.createListUseCase);
@@ -35,10 +37,11 @@ class ShoppingRoutes {
     ShoppingRoutes.updateListByIdUsecase,
   );
 
-  public static getResumeByIdUseCase = new GetResumeByIdUseCase(
+  private static getResumeByIdUseCase = new GetResumeByIdUseCase(
     ShoppingRoutes.shoppingListRepository,
+    ShoppingRoutes.shoppingListStatsRepository,
   );
-  public static getResumeByIdController = new GetResumeByIdController(
+  private static getResumeByIdController = new GetResumeByIdController(
     ShoppingRoutes.getResumeByIdUseCase,
   );
 
