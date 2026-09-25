@@ -7,7 +7,7 @@ import { IUpdateListByIdDTO } from 'modules/shopping/application/update-list-by-
 import { IPaginatedResponse } from 'shared/interfaces/paginated-response';
 import { Pagination } from 'shared/utils/pagination-response';
 
-class PostgresShoppingListRespository implements IShoppingList {
+class PostgresShoppingListRepository implements IShoppingList {
   async create(data: ShoppingList): Promise<ShoppingList> {
     return await prisma.shoppingList.create({
       data: {
@@ -102,4 +102,4 @@ class PostgresShoppingListRespository implements IShoppingList {
   }
 }
 
-export { PostgresShoppingListRespository };
+export { PostgresShoppingListRepository };

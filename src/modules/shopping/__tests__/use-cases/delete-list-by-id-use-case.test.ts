@@ -2,7 +2,7 @@
 import { DeleteListByIdUseCase } from 'modules/shopping/application/delete-list-by-id/delete-list-by-id-use-case';
 import { InvalidUserIdError } from 'modules/users/domain/errors/invalid-user-id-error';
 import { ListNotFound } from 'modules/shopping/domain/errors/list-not-found';
-import { PostgresShoppingListRespository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
+import { PostgresShoppingListRepository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
 
 describe('DeleteListByIdUseCase', () => {
   let shoppingListRepository: {
@@ -18,7 +18,7 @@ describe('DeleteListByIdUseCase', () => {
     };
 
     deleteListByIdUseCase = new DeleteListByIdUseCase(
-      shoppingListRepository as unknown as PostgresShoppingListRespository,
+      shoppingListRepository as unknown as PostgresShoppingListRepository,
     );
   });
 

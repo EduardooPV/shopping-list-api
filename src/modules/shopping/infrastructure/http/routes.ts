@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { PostgresShoppingListRespository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
+import { PostgresShoppingListRepository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
 import { CreateListUseCase } from 'modules/shopping/application/create-list/create-list-use-case';
 import { CreateListController } from './controllers/create-list-controller';
 import { Router } from 'core/http/router';
@@ -15,7 +15,7 @@ import { GetResumeByIdController } from './controllers/get-resume-list-by-id-con
 import { PostgresShoppingListStatsRespository } from '../database/postgres-shopping-list-stats-repository';
 
 class ShoppingRoutes {
-  private static shoppingListRepository = new PostgresShoppingListRespository();
+  private static shoppingListRepository = new PostgresShoppingListRepository();
   private static shoppingListStatsRepository = new PostgresShoppingListStatsRespository();
 
   private static createListUseCase = new CreateListUseCase(ShoppingRoutes.shoppingListRepository);

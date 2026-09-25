@@ -6,7 +6,7 @@ import { ItemNotFound } from 'modules/item/domain/errors/item-not-found';
 import { ListNotFound } from 'modules/shopping/domain/errors/list-not-found';
 import { NoPermission } from 'shared/errors/no-permission';
 import { PostgresItemListRepository } from 'modules/item/infrastructure/database/postgres-item-list-repository';
-import { PostgresShoppingListRespository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
+import { PostgresShoppingListRepository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
 
 describe('DeleteItemByIdUseCase', () => {
   let itemListRepository: { getItemById: jest.Mock; deleteItemById: jest.Mock };
@@ -22,7 +22,7 @@ describe('DeleteItemByIdUseCase', () => {
 
     deleteItemByIdUseCase = new DeleteItemByIdUseCase(
       itemListRepository as unknown as PostgresItemListRepository,
-      shoppingListRepository as unknown as PostgresShoppingListRespository,
+      shoppingListRepository as unknown as PostgresShoppingListRepository,
     );
   });
 

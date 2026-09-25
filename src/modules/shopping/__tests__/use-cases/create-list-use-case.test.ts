@@ -2,7 +2,7 @@
 import { CreateListUseCase } from 'modules/shopping/application/create-list/create-list-use-case';
 import { InvalidListName } from 'modules/shopping/domain/errors/invalid-list-name';
 import { InvalidUserIdError } from 'modules/users/domain/errors/invalid-user-id-error';
-import { PostgresShoppingListRespository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
+import { PostgresShoppingListRepository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
 import { ShoppingList } from 'modules/shopping/domain/entities/shopping-list';
 
 describe('CreateListUseCase', () => {
@@ -12,7 +12,7 @@ describe('CreateListUseCase', () => {
   beforeEach(() => {
     shoppingListRepository = { create: jest.fn() };
     createListUseCase = new CreateListUseCase(
-      shoppingListRepository as unknown as PostgresShoppingListRespository,
+      shoppingListRepository as unknown as PostgresShoppingListRepository,
     );
   });
 

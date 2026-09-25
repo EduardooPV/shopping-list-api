@@ -8,13 +8,13 @@ import { GetAllItemsByShoppingIdUseCase } from 'modules/item/application/get-all
 import { GetAllItemsByShoppingIdController } from 'modules/item/infrastructure/http/controllers/get-all-items-by-shopping-id-controller';
 import { DeleteItemByIdUseCase } from 'modules/item/application/delete-item-by-id/delete-item-by-id-use-case';
 import { DeleteItemByIdController } from 'modules/item/infrastructure/http/controllers/delete-item-by-id-controller';
-import { PostgresShoppingListRespository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
+import { PostgresShoppingListRepository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
 import { UpdateItemByIdUseCase } from 'modules/item/application/update-item-by-id/update-item-by-id-use-case';
 import { UpdateItemByIdController } from 'modules/item/infrastructure/http/controllers/update-item-by-id-controller';
 
 class ItemRoutes {
   private static itemListRepository = new PostgresItemListRepository();
-  private static shoppingListRepository = new PostgresShoppingListRespository();
+  private static shoppingListRepository = new PostgresShoppingListRepository();
 
   private static createItemUseCase = new CreateItemUseCase(
     ItemRoutes.itemListRepository,

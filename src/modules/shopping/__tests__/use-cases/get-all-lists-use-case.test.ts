@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { GetAllListsUseCase } from 'modules/shopping/application/get-all-lists/get-all-lists-use-case';
-import { PostgresShoppingListRespository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
+import { PostgresShoppingListRepository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
 import { ShoppingList } from 'modules/shopping/domain/entities/shopping-list';
 
 describe('GetAllListsUseCase', () => {
@@ -13,7 +13,7 @@ describe('GetAllListsUseCase', () => {
     };
 
     getAllListsUseCase = new GetAllListsUseCase(
-      shoppingListRepository as unknown as PostgresShoppingListRespository,
+      shoppingListRepository as unknown as PostgresShoppingListRepository,
     );
   });
 

@@ -5,7 +5,7 @@ import { ListNotFound } from 'modules/shopping/domain/errors/list-not-found';
 import { NoPermission } from 'shared/errors/no-permission';
 import { ItemNotFound } from 'modules/item/domain/errors/item-not-found';
 import { PostgresItemListRepository } from 'modules/item/infrastructure/database/postgres-item-list-repository';
-import { PostgresShoppingListRespository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
+import { PostgresShoppingListRepository } from 'modules/shopping/infrastructure/database/postgres-shopping-list-repository';
 import { ItemList } from 'modules/item/domain/entities/item-list';
 
 describe('UpdateItemByIdUseCase', () => {
@@ -28,7 +28,7 @@ describe('UpdateItemByIdUseCase', () => {
 
     updateItemByIdUseCase = new UpdateItemByIdUseCase(
       itemListRepository as unknown as PostgresItemListRepository,
-      shoppingListRepository as unknown as PostgresShoppingListRespository,
+      shoppingListRepository as unknown as PostgresShoppingListRepository,
     );
   });
 
