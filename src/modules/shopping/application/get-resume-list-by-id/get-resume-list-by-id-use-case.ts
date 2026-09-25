@@ -3,9 +3,13 @@ import { ListNotFound } from 'modules/shopping/domain/errors/list-not-found';
 import { NoPermission } from 'shared/errors/no-permission';
 import { IGetResumeByIdDTO, IGetResumeByIdResponse } from './get-resume-list-by-id-dto';
 import { IShoppingList } from 'modules/shopping/domain/repositories/shopping-list-repository';
+import { IShoppingListStats } from '../../domain/repositories/shopping-list-stats-repository';
 
 class GetResumeByIdUseCase {
-  constructor(private shoppingListRepository: IShoppingList) {}
+  constructor(
+    private shoppingListRepository: IShoppingList,
+    private shoppingListStatsRepository: IShoppingListStats,
+  ) {}
 
   async execute(data: IGetResumeByIdDTO): Promise<IGetResumeByIdResponse> {
     if (data.userId == null) throw new InvalidUserIdError({ reason: 'missing' });
@@ -19,9 +23,9 @@ class GetResumeByIdUseCase {
     }
 
     const [doneItemsCount, pendingItemsCount, sumItemsCount] = await Promise.all([
-      this.shoppingListRepository.getDoneItemsById(data.listId),
-      this.shoppingListRepository.getPendingItemsById(data.listId),
-      this.shoppingListRepository.getSumAmountItemsById(data.listId),
+      this.shoppingListStatsRepository.getDoneItemsById(data.listId),
+      this.shoppingListStatsRepository.getPendingItemsById(data.listId),
+      this.shoppingListStatsRepository.getSumAmountItemsById(data.listId),
     ]);
 
     return {
