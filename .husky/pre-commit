@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npx lint-staged
+[ -f "api/package.json" ] && (cd api && npx lint-staged)
+[ -f "app/package.json" ] && (cd app && npx lint-staged)
