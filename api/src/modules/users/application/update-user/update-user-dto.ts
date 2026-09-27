@@ -1,7 +1,8 @@
 interface IUpdateUserRequestDTO {
   id?: string;
-  name: string;
-  password: string;
+  name?: string;
+  email?: string;
+  password?: string;
 }
 
 export { IUpdateUserRequestDTO };

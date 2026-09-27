@@ -1,14 +1,25 @@
 "use client";
 
 import { useCallback, useState, useTransition } from "react";
+import { Pencil } from "lucide-react";
 import { logoutAction, deleteUserAction } from "@/app/actions/users";
+import { Button } from "@/components/button";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ProfileForm } from "./profile-form";
 
 type User = { id: string; name: string; email: string };
 
+type DialogConfig = {
+  title: string;
+  message: string;
+  confirmLabel: string;
+  variant: "default" | "destructive";
+  action: () => void;
+};
+
 export function ProfileClient({ user }: { user: User }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [dialog, setDialog] = useState<DialogConfig | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const handleClose = useCallback(() => setIsEditing(false), []);
@@ -24,31 +35,50 @@ export function ProfileClient({ user }: { user: User }) {
     return <ProfileForm user={user} onClose={handleClose} />;
   }
 
-  function handleLogout() {
-    startTransition(async () => {
-      await logoutAction();
+  function openLogoutDialog() {
+    setDialog({
+      title: "Sair da conta",
+      message: "Tem certeza que deseja sair?",
+      confirmLabel: "Sair",
+      variant: "default",
+      action: () =>
+        startTransition(async () => {
+          await logoutAction();
+        }),
     });
   }
 
-  function handleDelete() {
-    startTransition(async () => {
-      await deleteUserAction();
+  function openDeleteDialog() {
+    setDialog({
+      title: "Excluir conta",
+      message: "Essa ação é permanente e não pode ser desfeita.",
+      confirmLabel: "Excluir",
+      variant: "destructive",
+      action: () =>
+        startTransition(async () => {
+          await deleteUserAction();
+        }),
     });
   }
 
   return (
     <div className="flex flex-col min-h-dvh px-6 py-10">
       <div className="flex flex-col items-center gap-4 pt-6">
-        <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
-          <span className="text-white font-semibold text-xl">{initials}</span>
-        </div>
-        <div className="text-center">
-          <p className="text-lg font-semibold">{user.name}</p>
-          <p className="text-sm text-muted">{user.email}</p>
+        <div className="relative">
+          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
+            <span className="text-white font-semibold text-xl">{initials}</span>
+          </div>
+          <button
+            onClick={() => setIsEditing(true)}
+            className="absolute -top-1 -right-1 w-6 h-6 bg-primary rounded-full flex items-center justify-center border-2 border-white shadow-sm"
+            aria-label="Editar perfil"
+          >
+            <Pencil size={11} color="white" strokeWidth={2.5} />
+          </button>
         </div>
       </div>
 
-      <div className="flex flex-col gap-0 mt-10 rounded-2xl border border-border overflow-hidden">
+      <div className="flex flex-col mt-10 rounded-2xl border border-border overflow-hidden">
         <div className="flex flex-col gap-0.5 px-4 py-4 border-b border-border">
           <p className="text-xs text-muted">Nome</p>
           <p className="text-sm font-medium text-foreground">{user.name}</p>
@@ -60,52 +90,31 @@ export function ProfileClient({ user }: { user: User }) {
       </div>
 
       <div className="flex flex-col gap-3 mt-auto pt-8">
-        <button
-          onClick={() => setIsEditing(true)}
-          className="w-full rounded-2xl border border-border py-4 text-sm font-medium text-foreground transition-colors"
-        >
-          Editar perfil
-        </button>
-
-        {confirmingDelete ? (
-          <div className="flex flex-col gap-2">
-            <p className="text-sm text-center text-muted">
-              Tem certeza? Essa ação não pode ser desfeita.
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setConfirmingDelete(false)}
-                className="flex-1 rounded-2xl border border-border py-3.5 text-sm font-medium"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={isPending}
-                className="flex-1 rounded-2xl bg-red-50 py-3.5 text-sm font-medium text-red-500 disabled:opacity-60"
-              >
-                Confirmar
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button
-            onClick={() => setConfirmingDelete(true)}
-            disabled={isPending}
-            className="w-full py-4 text-sm font-medium text-red-500 disabled:opacity-60"
-          >
-            Excluir conta
-          </button>
-        )}
-
-        <button
-          onClick={handleLogout}
+        <Button
+          variant="outline"
+          onClick={openLogoutDialog}
           disabled={isPending}
-          className="w-full py-4 text-sm font-medium text-muted disabled:opacity-60"
         >
           Sair da conta
-        </button>
+        </Button>
+        <Button variant="ghost" onClick={openDeleteDialog} disabled={isPending}>
+          Excluir conta
+        </Button>
       </div>
+
+      {dialog && (
+        <ConfirmDialog
+          title={dialog.title}
+          message={dialog.message}
+          confirmLabel={dialog.confirmLabel}
+          variant={dialog.variant}
+          onConfirm={() => {
+            dialog.action();
+            setDialog(null);
+          }}
+          onCancel={() => setDialog(null)}
+        />
+      )}
     </div>
   );
 }

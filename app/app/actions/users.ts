@@ -14,25 +14,25 @@ type UserState = {
 
 const updateUserSchema = z
   .object({
-    name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-    email: z.string().email("E-mail inválido"),
+    name: z.string().optional(),
+    email: z.string().optional(),
     password: z.string().optional(),
     confirmPassword: z.string().optional(),
   })
   .superRefine((data, ctx) => {
+    if (data.name && data.name.length < 2) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Mínimo 2 caracteres", path: ["name"] });
+    }
+    if (data.email) {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "E-mail inválido", path: ["email"] });
+      }
+    }
     if (data.password && data.password.length < 6) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Mínimo 6 caracteres",
-        path: ["password"],
-      });
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Mínimo 6 caracteres", path: ["password"] });
     }
     if (data.password && data.password !== data.confirmPassword) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "As senhas não coincidem",
-        path: ["confirmPassword"],
-      });
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "As senhas não coincidem", path: ["confirmPassword"] });
     }
   });
 
@@ -56,8 +56,14 @@ export async function updateUserAction(
   }
 
   const { name, email, password } = result.data;
-  const payload: { name: string; email: string; password?: string } = { name, email };
-  if (password && password.length > 0) payload.password = password;
+  const payload: Record<string, string> = {};
+  if (name) payload.name = name;
+  if (email) payload.email = email;
+  if (password) payload.password = password;
+
+  if (Object.keys(payload).length === 0) {
+    return { error: "Preencha ao menos um campo para atualizar." };
+  }
 
   const response = await api.put("/users/me", payload);
 

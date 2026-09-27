@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { registerAction } from "../../actions/auth";
 import { SubmitButton } from "../_components/submit-button";
-import { FormField } from "../_components/form-field";
+import { FormField } from "@/components/form-field";
 import { Logo } from "@/components/logo";
 
 export default function RegisterPage() {

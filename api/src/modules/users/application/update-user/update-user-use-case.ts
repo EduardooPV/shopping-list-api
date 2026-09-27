@@ -16,13 +16,13 @@ class UpdateUserUseCase {
 
     if (!userExist) throw new UserNotFound();
 
-    const password = data.password
-      ? await bcryptjs.hash(data.password, BCRYPT_COST)
-      : data.password;
+    const password =
+      data.password != null ? await bcryptjs.hash(data.password, BCRYPT_COST) : data.password;
 
     const newUser = await this.userRepository.updateById({
       id: data.id,
       name: data.name,
+      email: data.email,
       password,
     });
 

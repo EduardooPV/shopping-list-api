@@ -1,74 +1,144 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 import { updateUserAction } from "@/app/actions/users";
-import { FormField } from "@/app/(auth)/_components/form-field";
-import { SubmitButton } from "@/app/(auth)/_components/submit-button";
+import { Button } from "@/components/button";
+import { FormField } from "@/components/form-field";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 type User = { id: string; name: string; email: string };
 
-export function ProfileForm({ user, onClose }: { user: User; onClose: () => void }) {
+export function ProfileForm({
+  user,
+  onClose,
+}: {
+  user: User;
+  onClose: () => void;
+}) {
   const router = useRouter();
-  const [state, action] = useActionState(updateUserAction, null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [serverError, setServerError] = useState<string>();
+  const [showDialog, setShowDialog] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  useEffect(() => {
-    if (!state?.success) return;
-    router.refresh();
-    onClose();
-  }, [state?.success, router, onClose]);
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const name = data.get("name") as string;
+    const email = data.get("email") as string;
+    const password = data.get("password") as string;
+    const confirmPassword = data.get("confirmPassword") as string;
+
+    const newErrors: Record<string, string> = {};
+    if (name && name.length < 2) newErrors.name = "Mínimo 2 caracteres";
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      newErrors.email = "E-mail inválido";
+    if (password && password.length < 6)
+      newErrors.password = "Mínimo 6 caracteres";
+    if (password && password !== confirmPassword)
+      newErrors.confirmPassword = "As senhas não coincidem";
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
+    setShowDialog(true);
+  }
+
+  function handleConfirm() {
+    setShowDialog(false);
+    startTransition(async () => {
+      const result = await updateUserAction(
+        null,
+        new FormData(formRef.current!),
+      );
+      if (result?.success) {
+        router.refresh();
+        onClose();
+      } else if (result?.fieldErrors) {
+        setErrors(result.fieldErrors);
+      } else if (result?.error) {
+        setServerError(result.error);
+      }
+    });
+  }
 
   return (
     <div className="flex flex-col min-h-dvh px-6 py-10">
       <button
         type="button"
         onClick={onClose}
-        className="self-start text-sm text-muted mb-8"
+        className="self-start flex items-center gap-1.5 text-sm text-muted mb-8"
       >
-        ← Voltar
+        <ArrowLeft size={16} />
+        Voltar
       </button>
 
       <div className="flex flex-col gap-1 mb-8">
         <h1 className="text-2xl font-bold tracking-tight">Editar perfil</h1>
-        <p className="text-sm text-muted">Atualize suas informações</p>
+        <p className="text-sm text-muted">
+          Preencha apenas o que deseja alterar
+        </p>
       </div>
 
-      <form action={action} className="flex flex-col gap-3">
+      <form
+        ref={formRef}
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-3 flex-1"
+      >
         <FormField
           name="name"
           type="text"
-          placeholder="Nome"
+          placeholder="Novo nome"
           defaultValue={user.name}
-          error={state?.fieldErrors?.name}
+          error={errors.name}
         />
         <FormField
           name="email"
           type="email"
-          placeholder="E-mail"
+          placeholder="Novo e-mail"
           defaultValue={user.email}
-          error={state?.fieldErrors?.email}
+          error={errors.email}
         />
+
+        <div className="border-t border-border my-2" />
+
         <FormField
           name="password"
           type="password"
           placeholder="Nova senha (opcional)"
-          error={state?.fieldErrors?.password}
+          error={errors.password}
         />
         <FormField
           name="confirmPassword"
           type="password"
           placeholder="Confirmar nova senha"
-          error={state?.fieldErrors?.confirmPassword}
+          error={errors.confirmPassword}
         />
 
-        {state?.error && (
-          <p className="text-sm text-red-500 text-center">{state.error}</p>
+        {serverError && (
+          <p className="text-sm text-red-500 text-center">{serverError}</p>
         )}
 
-        <div className="mt-1">
-          <SubmitButton label="Salvar alterações" />
+        <div className="mt-auto pt-8">
+          <Button type="submit" loading={isPending}>
+            Salvar alterações
+          </Button>
         </div>
       </form>
+
+      {showDialog && (
+        <ConfirmDialog
+          title="Editar perfil"
+          message="Tem certeza que deseja salvar as alterações?"
+          confirmLabel="Salvar"
+          variant="default"
+          onConfirm={handleConfirm}
+          onCancel={() => setShowDialog(false)}
+        />
+      )}
     </div>
   );
 }

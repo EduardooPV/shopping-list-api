@@ -5,10 +5,15 @@ import { ReplyResponder } from 'core/http/utils/reply';
 import { UpdateUserViewModel } from 'modules/users/application/update-user/update-user-view-model';
 import { z } from 'zod';
 
-const schema = z.object({
-  name: z.string().min(2).max(50),
-  password: z.string().min(6),
-});
+const schema = z
+  .object({
+    name: z.string().min(2).max(50).optional(),
+    email: z.string().email().optional(),
+    password: z.string().min(6).optional(),
+  })
+  .refine((data) => data.name != null || data.email != null || data.password, {
+    message: 'Informe ao menos um campo para atualizar',
+  });
 
 class UpdateUserController {
   constructor(private updateUserUseCase: UpdateUserUseCase) {}
