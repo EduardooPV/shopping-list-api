@@ -22,23 +22,7 @@ Uma aplicação completa de lista de compras onde o usuário pode:
 
 ## Telas
 
-<p align="center">
-  <img src="docs/screenshots/login.jpg" width="180" alt="Login" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/home.jpg" width="180" alt="Home" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/list-mercado.jpg" width="180" alt="Lista Mercado" />
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/list-escolar.jpg" width="180" alt="Lista Material Escolar" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/item-form.jpg" width="180" alt="Adicionar Item" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/profile.jpg" width="180" alt="Perfil" />
-</p>
-
-> Da esquerda para a direita: Login · Home com listas · Lista do mercado com itens concluídos · Material escolar · Formulário de item · Perfil
+https://github.com/user-attachments/assets/ae6b6738-b353-43e7-b6d0-f00bba818fae
 
 ---
 
