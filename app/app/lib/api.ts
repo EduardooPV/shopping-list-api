@@ -8,6 +8,7 @@ async function request(path: string, options?: RequestInit) {
 
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
+    cache: "no-store",
     headers: {
       "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),

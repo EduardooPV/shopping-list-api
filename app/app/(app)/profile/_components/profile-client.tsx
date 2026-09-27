@@ -1,11 +1,12 @@
 "use client";
 
 import { useCallback, useState, useTransition } from "react";
-import { Pencil } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import { logoutAction, deleteUserAction } from "@/app/actions/users";
 import { Button } from "@/components/button";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ProfileForm } from "./profile-form";
+import Link from "next/link";
 
 type User = { id: string; name: string; email: string };
 
@@ -63,6 +64,14 @@ export function ProfileClient({ user }: { user: User }) {
 
   return (
     <div className="flex flex-col min-h-dvh px-6 py-10">
+      <Link
+        href="/"
+        className="self-start flex items-center gap-1.5 text-sm text-muted mb-8"
+      >
+        <ArrowLeft size={16} />
+        Voltar
+      </Link>
+
       <div className="flex flex-col items-center gap-4 pt-6">
         <div className="relative">
           <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">

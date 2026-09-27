@@ -10,16 +10,20 @@ put {
   auth: bearer
 }
 
-auth:bearer {
-  token: {{accessToken}}
-}
-
 headers {
   Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{accessToken}}
 }
 
 body:json {
   {
     "name": "Mercado semana atualizado"
   }
+}
+
+vars:pre-request {
+  listId: 4d414213-7e89-45b1-a32b-c1528244e7a8
 }
