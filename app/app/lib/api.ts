@@ -6,17 +6,21 @@ async function request(path: string, options?: RequestInit) {
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken")?.value;
 
-  const response = await fetch(`${API_URL}${path}`, {
-    ...options,
-    cache: "no-store",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` }),
-      ...options?.headers,
-    },
-  });
+  try {
+    const response = await fetch(`${API_URL}${path}`, {
+      ...options,
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...options?.headers,
+      },
+    });
 
-  return response;
+    return response;
+  } catch {
+    throw new Error("NETWORK_ERROR");
+  }
 }
 
 export const api = {

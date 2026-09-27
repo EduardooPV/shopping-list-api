@@ -1,10 +1,12 @@
 "use server";
 
 import z from "zod";
-import { getErrorMessage } from "../lib/error-messages";
+import { parseApiError } from "../lib/error-messages";
 import { api } from "../lib/api";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+
+const CONNECTION_ERROR = "Sem conexão com o servidor. Verifique sua internet.";
 
 type UserState = {
   error?: string;
@@ -21,18 +23,34 @@ const updateUserSchema = z
   })
   .superRefine((data, ctx) => {
     if (data.name && data.name.length < 2) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Mínimo 2 caracteres", path: ["name"] });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Mínimo 2 caracteres",
+        path: ["name"],
+      });
     }
     if (data.email) {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "E-mail inválido", path: ["email"] });
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "E-mail inválido",
+          path: ["email"],
+        });
       }
     }
     if (data.password && data.password.length < 6) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Mínimo 6 caracteres", path: ["password"] });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Mínimo 6 caracteres",
+        path: ["password"],
+      });
     }
     if (data.password && data.password !== data.confirmPassword) {
-      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "As senhas não coincidem", path: ["confirmPassword"] });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "As senhas não coincidem",
+        path: ["confirmPassword"],
+      });
     }
   });
 
@@ -65,34 +83,36 @@ export async function updateUserAction(
     return { error: "Preencha ao menos um campo para atualizar." };
   }
 
-  const response = await api.put("/users/me", payload);
-
-  if (!response.ok) {
-    const data = await response.json();
-    return { error: getErrorMessage(data.error.code, data.error.message) };
+  try {
+    const response = await api.put("/users/me", payload);
+    if (!response.ok) return { error: await parseApiError(response) };
+    return { success: true };
+  } catch {
+    return { error: CONNECTION_ERROR };
   }
-
-  return { success: true };
 }
 
 export async function logoutAction() {
-  await api.post("/auth/logout", {});
-
-  const cookieStore = await cookies();
-  cookieStore.delete("accessToken");
-
-  redirect("/login");
-}
-
-export async function deleteUserAction() {
-  const response = await api.delete("/users/me");
-
-  if (!response.ok) {
-    return { error: "Erro ao deletar conta." };
+  try {
+    await api.post("/auth/logout", {});
+  } catch {
+    // If logout request fails, clear session locally anyway
   }
 
   const cookieStore = await cookies();
   cookieStore.delete("accessToken");
-
   redirect("/login");
+}
+
+export async function deleteUserAction(): Promise<{ error?: string }> {
+  try {
+    const response = await api.delete("/users/me");
+    if (!response.ok) return { error: await parseApiError(response) };
+
+    const cookieStore = await cookies();
+    cookieStore.delete("accessToken");
+    redirect("/login");
+  } catch {
+    return { error: CONNECTION_ERROR };
+  }
 }

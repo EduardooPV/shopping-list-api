@@ -1,33 +1,66 @@
 # Shopping List
 
-Monorepo de uma aplicação de lista de compras. Projeto de estudo com foco em arquitetura, padrões de projeto e features modernas do ecossistema Node.js e React.
+Aplicativo mobile-first de lista de compras — monorepo com API REST em Node.js puro e frontend em Next.js com React 19.
 
 [![Checks](https://github.com/EduardooPV/shopping-list-api/actions/workflows/checks.yml/badge.svg)](https://github.com/EduardooPV/shopping-list-api/actions/workflows/checks.yml)
 
 ---
 
-## Estrutura
+## O que é
+
+Uma aplicação completa de lista de compras onde o usuário pode:
+
+- **Criar conta e fazer login** com sessão via JWT + Refresh Token
+- **Criar e organizar múltiplas listas** (mercado, material escolar, churrasco...)
+- **Adicionar itens** com nome, quantidade e valor
+- **Concluir itens** com swipe horizontal ou toque no checkbox
+- **Acompanhar o progresso** pela barra de concluídos no topo
+- **Ver o total gasto** por lista
+- **Gerenciar o perfil** (editar nome, e-mail, senha)
+
+---
+
+## Telas
+
+<p align="center">
+  <img src="docs/screenshots/login.jpg" width="180" alt="Login" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/home.jpg" width="180" alt="Home" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/list-mercado.jpg" width="180" alt="Lista Mercado" />
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/list-escolar.jpg" width="180" alt="Lista Material Escolar" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/item-form.jpg" width="180" alt="Adicionar Item" />
+  &nbsp;&nbsp;
+  <img src="docs/screenshots/profile.jpg" width="180" alt="Perfil" />
+</p>
+
+> Da esquerda para a direita: Login · Home com listas · Lista do mercado com itens concluídos · Material escolar · Formulário de item · Perfil
+
+---
+
+## Estrutura do monorepo
 
 ```
 shopping-list/
-├── api/                  # API REST em Node.js sem framework (http nativo)
-│   ├── src/              # Código fonte — Clean Architecture + DDD
-│   ├── prisma/           # Schema e migrations (PostgreSQL)
-│   ├── bruno/            # Coleções HTTP para teste manual
-│   └── README.md         # Documentação completa da API
+├── api/              # API REST em Node.js sem framework (http nativo)
+│   ├── src/          # Clean Architecture + DDD por módulo
+│   ├── prisma/       # Schema e migrations (PostgreSQL)
+│   ├── bruno/        # Coleções HTTP para teste manual
+│   └── README.md     # Documentação completa da API ↗
 │
-├── app/                  # Frontend em Next.js (App Router)
-│   └── README.md         # Documentação do frontend
+├── app/              # Frontend em Next.js (App Router)
+│   └── README.md     # Documentação do frontend ↗
 │
-├── k8s/                  # Manifestos Kubernetes (Kind)
-├── docs/                 # Documentação compartilhada do projeto
-│   ├── FRONTEND.md       # Mapeamento de telas e rotas consumidas
-│   └── REACT_NEXTJS_FEATURES.md  # Guia de features React/Next.js
-│
-├── docker-compose.yml    # Orquestração local completa
-├── prometheus.yml        # Configuração do Prometheus
-├── kind-config.yaml      # Configuração do cluster Kind
-└── Makefile              # Comandos de desenvolvimento
+├── k8s/              # Manifestos Kubernetes (Kind)
+├── docs/             # Wireframes, guias e screenshots
+├── docker-compose.yml
+├── prometheus.yml
+├── kind-config.yaml
+└── Makefile          # Comandos de desenvolvimento
 ```
 
 ---
@@ -38,12 +71,54 @@ shopping-list/
 |-------------|-------------------------------------------|
 | API         | Node.js 20 + TypeScript 5 (sem framework) |
 | Banco       | PostgreSQL 16 + Prisma ORM                |
-| Frontend    | Next.js (App Router) + React 19           |
+| Frontend    | Next.js 16 (App Router) + React 19        |
 | Estilização | Tailwind CSS 4                            |
+| Testes      | Jest (unitários, backend)                 |
 | Infra local | Docker Compose                            |
 | Orquestração| Kubernetes (Kind)                         |
 | Observação  | Prometheus + Grafana                      |
 | CI/CD       | GitHub Actions                            |
+
+---
+
+## Rodando localmente
+
+### Pré-requisitos
+
+- [Docker](https://docs.docker.com/get-docker/) e Docker Compose
+- [Node.js 20+](https://github.com/nvm-sh/nvm)
+- [Make](https://www.gnu.org/software/make/)
+
+### Variáveis de ambiente
+
+```bash
+cp api/.env.example api/.env   # edite com seus valores
+```
+
+### Subindo tudo (recomendado)
+
+```bash
+make dev     # sobe infraestrutura + API + App via Docker (hot reload)
+make stop    # para e remove todos os containers
+make logs    # acompanha os logs em tempo real
+```
+
+### Desenvolvimento local (sem Docker para o código)
+
+```bash
+make infra   # sobe postgres + prometheus + grafana em background
+
+cd api && npm install && npm run dev   # API em http://localhost:3333
+cd app && npm install && npm run dev   # App em http://localhost:3000
+```
+
+### Comandos adicionais
+
+```bash
+make infra   # só postgres + prometheus + grafana
+make api     # infra + API
+make app     # infra + API + App
+```
 
 ---
 
@@ -59,53 +134,12 @@ shopping-list/
 
 ---
 
-## Rodando localmente
-
-### Pré-requisitos
-
-- [Docker](https://docs.docker.com/get-docker/) e Docker Compose
-- [Node.js 20+](https://github.com/nvm-sh/nvm) (via nvm)
-- [Make](https://www.gnu.org/software/make/)
-
-### Variáveis de ambiente
-
-```bash
-cp api/.env.example api/.env   # edite com seus valores
-```
-
-### Subindo tudo
-
-```bash
-make dev          # sobe infraestrutura + API + App via Docker (hot reload)
-make stop         # para e remove todos os containers
-make logs         # acompanha os logs em tempo real
-```
-
-### Comandos individuais
-
-```bash
-make infra        # sobe só postgres + prometheus + grafana
-make api          # sobe infra + API
-make app          # sobe infra + API + App
-```
-
-### Desenvolvimento local (sem Docker para o código)
-
-```bash
-make infra        # infra em background via Docker
-
-cd api && npm install && npm run dev   # API com hot reload
-cd app && npm install && npm run dev   # App com hot reload
-```
-
----
-
 ## Documentação
 
 Cada subprojeto tem seu próprio README com detalhes de arquitetura, padrões e decisões:
 
-- **[`api/README.md`](api/README.md)** — rotas, arquitetura Clean + DDD, padrões implementados, variáveis de ambiente, testes
-- **[`app/README.md`](app/README.md)** — estrutura de pastas, features React/Next.js, convenções
+- **[`api/README.md`](api/README.md)** — rotas, arquitetura Clean + DDD, padrões implementados, variáveis de ambiente, testes, observabilidade
+- **[`app/README.md`](app/README.md)** — estrutura de pastas, features React 19 / Next.js App Router, error handling, swipe gesture, toast, Server Actions
 
 ---
 
@@ -113,11 +147,19 @@ Cada subprojeto tem seu próprio README com detalhes de arquitetura, padrões e 
 
 | Workflow          | Trigger | O que faz                                              |
 |-------------------|---------|--------------------------------------------------------|
-| `checks.yml`      | PR      | lint, format check e testes unitários da API           |
+| `checks.yml`      | PR      | lint, format:check e testes unitários da API           |
 | `validate-pr.yml` | PR      | valida título (`feat/fix/chore/docs/test:`), assignee e label |
 
 ---
 
 ## Infraestrutura
 
-Os manifestos Kubernetes em [`k8s/`](k8s/) rodam num cluster local com [Kind](https://kind.sigs.k8s.io/). Ver [`kind-config.yaml`](kind-config.yaml) para configuração do cluster.
+Os manifestos Kubernetes em [`k8s/`](k8s/) rodam num cluster local com [Kind](https://kind.sigs.k8s.io/). Ver [`kind-config.yaml`](kind-config.yaml) para a configuração do cluster.
+
+---
+
+<p align="center">
+  Desenvolvido por <strong>Luiz Eduardo Veltroni</strong> ·
+  <a href="https://github.com/EduardooPV">GitHub</a> ·
+  <a href="https://www.linkedin.com/in/luiz-veltroni/">LinkedIn</a>
+</p>

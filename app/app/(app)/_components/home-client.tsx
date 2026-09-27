@@ -12,6 +12,7 @@ import { ListItem } from "./list-item";
 import { Plus } from "lucide-react";
 import { ListFormSheet } from "./list-form-sheet";
 import { ConfirmDialog } from "../../../components/confirm-dialog";
+import { useToast } from "../../../components/toast";
 
 type ShoppingList = { id: string; name: string };
 type User = { id: string; name: string; email: string };
@@ -24,6 +25,7 @@ export function HomeClient({
   user: User;
 }) {
   const router = useRouter();
+  const { showToast } = useToast();
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ShoppingList | null>(null);
   const [formSheet, setFormSheet] = useState<{ list?: ShoppingList } | null>(
@@ -50,7 +52,10 @@ export function HomeClient({
     setDeleteTarget(null);
     startTransition(async () => {
       optimisticDelete(id);
-      await deleteListAction(id);
+      const result = await deleteListAction(id);
+      if (result.error) {
+        showToast(result.error);
+      }
       router.refresh();
     });
   }
@@ -60,10 +65,15 @@ export function HomeClient({
       ? await updateListAction(formSheet.list.id, name)
       : await createListAction(name);
 
-    if (result.error) return result.error;
+    if (result.error) {
+      showToast(result.error);
+      setFormSheet(null);
+      return undefined;
+    }
 
     setFormSheet(null);
     router.refresh();
+    return undefined;
   }
 
   return (

@@ -4,7 +4,9 @@ import { cookies } from "next/headers";
 import { api } from "../lib/api";
 import { redirect } from "next/navigation";
 import z from "zod";
-import { getErrorMessage } from "../lib/error-messages";
+import { parseApiError } from "../lib/error-messages";
+
+const CONNECTION_ERROR = "Sem conexão com o servidor. Verifique sua internet.";
 
 type AuthState = {
   error?: string;
@@ -55,17 +57,20 @@ export async function loginAction(
     };
   }
 
-  const response = await api.post("/auth/login", result.data);
+  try {
+    const response = await api.post("/auth/login", result.data);
 
-  if (!response.ok) {
+    if (!response.ok) {
+      return { error: await parseApiError(response) };
+    }
+
     const data = await response.json();
-    return { error: getErrorMessage(data.error.code, data.error.message) };
+    await setAccessTokenCookie(data.accessToken);
+    redirect("/");
+  } catch (e) {
+    if ((e as Error)?.message?.includes("NEXT_REDIRECT")) throw e;
+    return { error: CONNECTION_ERROR };
   }
-
-  const data = await response.json();
-
-  await setAccessTokenCookie(data.accessToken);
-  redirect("/");
 }
 
 export async function registerAction(
@@ -77,12 +82,7 @@ export async function registerAction(
   const password = formData.get("password");
   const confirmPassword = formData.get("confirmPassword");
 
-  const result = registerSchema.safeParse({
-    name,
-    email,
-    password,
-    confirmPassword,
-  });
+  const result = registerSchema.safeParse({ name, email, password, confirmPassword });
 
   if (!result.success) {
     return {
@@ -92,21 +92,24 @@ export async function registerAction(
     };
   }
 
-  const registerResponse = await api.post("/users", result.data);
+  try {
+    const registerResponse = await api.post("/users", result.data);
 
-  if (!registerResponse.ok) {
-    const data = await registerResponse.json();
-    return { error: getErrorMessage(data.error.code, data.error.message) };
+    if (!registerResponse.ok) {
+      return { error: await parseApiError(registerResponse) };
+    }
+
+    const loginResponse = await api.post("/auth/login", { email, password });
+
+    if (!loginResponse.ok) {
+      redirect("/login");
+    }
+
+    const data = await loginResponse.json();
+    await setAccessTokenCookie(data.accessToken);
+    redirect("/");
+  } catch (e) {
+    if ((e as Error)?.message?.includes("NEXT_REDIRECT")) throw e;
+    return { error: CONNECTION_ERROR };
   }
-
-  const loginResponse = await api.post("/auth/login", { email, password });
-
-  if (!loginResponse.ok) {
-    redirect("/login");
-  }
-
-  const data = await loginResponse.json();
-
-  await setAccessTokenCookie(data.accessToken);
-  redirect("/");
 }

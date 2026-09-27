@@ -9,7 +9,7 @@ const errorMessages: Record<string, string> = {
   USER_ALREADY_EXISTS: "Este e-mail já está em uso",
   USER_NOT_FOUND: "Usuário não encontrado",
   INVALID_USER_ID: "ID de usuário inválido",
-  INVALID_USER_NAME: "Nome de usuário inválido",
+  INVALID_USER_NAME: "Nome inválido",
 
   // Listas
   LIST_NOT_FOUND: "Lista não encontrada",
@@ -24,10 +24,32 @@ const errorMessages: Record<string, string> = {
 
   // Genéricos
   VALIDATION_ERROR: "Dados inválidos, verifique os campos",
-  BAD_REQUEST: "Requisição inválida",
-  INTERNAL_ERROR: "Erro interno, tente novamente mais tarde",
+  BAD_REQUEST: "Dados inválidos",
+  INTERNAL_ERROR: "Erro no servidor. Tente novamente mais tarde.",
 };
 
-export function getErrorMessage(code: string, fallback?: string): string {
-  return errorMessages[code] ?? fallback ?? "Algo deu errado, tente novamente";
+function messageForStatus(status: number): string {
+  if (status === 400) return "Não foi possível completar a ação. Tente novamente.";
+  if (status === 401) return "Sessão inválida. Faça login novamente.";
+  if (status === 403) return "Sem permissão para realizar esta ação.";
+  if (status === 404) return "Recurso não encontrado.";
+  if (status === 409) return "Conflito com um registro existente.";
+  if (status >= 500) return "Erro no servidor. Tente novamente mais tarde.";
+  return "Algo deu errado. Tente novamente.";
+}
+
+export function getErrorMessage(code?: string): string {
+  if (code && errorMessages[code]) return errorMessages[code];
+  return "Algo deu errado. Tente novamente.";
+}
+
+export async function parseApiError(response: Response): Promise<string> {
+  try {
+    const data = await response.json();
+    const code = data?.error?.code as string | undefined;
+    if (code && errorMessages[code]) return errorMessages[code];
+  } catch {
+    // Response body wasn't JSON (e.g. proxy HTML 502) — fall through to status
+  }
+  return messageForStatus(response.status);
 }

@@ -1,0 +1,29 @@
+meta {
+  name: Get List
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/lists/{{listId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+body:json {
+  {
+    "name": "Mercado semana atualizado"
+  }
+}
+
+vars:pre-request {
+  listId: c1e34b1e-c058-4079-8a36-51765f4731c2
+}

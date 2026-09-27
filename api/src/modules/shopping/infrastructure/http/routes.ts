@@ -12,6 +12,8 @@ import { UpdateListByIdUseCase } from '../../application/update-list-by-id/updat
 import { UpdateListByIdController } from './controllers/update-list-by-id-controller';
 import { GetResumeByIdUseCase } from '../../application/get-resume-list-by-id/get-resume-list-by-id-use-case';
 import { GetResumeByIdController } from './controllers/get-resume-list-by-id-controller';
+import { GetListByIdUseCase } from '../../application/get-list-by-id/get-list-by-id-use-case';
+import { GetListByIdController } from './controllers/get-list-by-id-controller';
 import { PostgresShoppingListStatsRespository } from '../database/postgres-shopping-list-stats-repository';
 
 class ShoppingRoutes {
@@ -45,6 +47,11 @@ class ShoppingRoutes {
     ShoppingRoutes.getResumeByIdUseCase,
   );
 
+  private static getListByIdUseCase = new GetListByIdUseCase(ShoppingRoutes.shoppingListRepository);
+  private static getListByIdController = new GetListByIdController(
+    ShoppingRoutes.getListByIdUseCase,
+  );
+
   static register(router: Router): void {
     router.register({
       method: 'POST',
@@ -76,6 +83,14 @@ class ShoppingRoutes {
       middlewares: [EnsureAuthenticatedMiddleware.handle],
       handler: (req: IncomingMessage, res: ServerResponse) =>
         ShoppingRoutes.updateListByIdController.handle(req, res),
+    });
+
+    router.register({
+      method: 'GET',
+      path: '/lists/:id',
+      middlewares: [EnsureAuthenticatedMiddleware.handle],
+      handler: (req: IncomingMessage, res: ServerResponse) =>
+        ShoppingRoutes.getListByIdController.handle(req, res),
     });
 
     router.register({

@@ -1,5 +1,6 @@
 import React from "react";
+import { ToastProvider } from "../../components/toast";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return <ToastProvider>{children}</ToastProvider>;
 }

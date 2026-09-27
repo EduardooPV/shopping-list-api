@@ -6,6 +6,7 @@ import { logoutAction, deleteUserAction } from "@/app/actions/users";
 import { Button } from "@/components/button";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ProfileForm } from "./profile-form";
+import { useToast } from "@/components/toast";
 import Link from "next/link";
 
 type User = { id: string; name: string; email: string };
@@ -22,6 +23,7 @@ export function ProfileClient({ user }: { user: User }) {
   const [isEditing, setIsEditing] = useState(false);
   const [dialog, setDialog] = useState<DialogConfig | null>(null);
   const [isPending, startTransition] = useTransition();
+  const { showToast } = useToast();
 
   const handleClose = useCallback(() => setIsEditing(false), []);
 
@@ -57,7 +59,8 @@ export function ProfileClient({ user }: { user: User }) {
       variant: "destructive",
       action: () =>
         startTransition(async () => {
-          await deleteUserAction();
+          const result = await deleteUserAction();
+          if (result?.error) showToast(result.error, "error");
         }),
     });
   }

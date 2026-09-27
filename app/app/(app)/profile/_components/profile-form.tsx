@@ -7,6 +7,7 @@ import { updateUserAction } from "@/app/actions/users";
 import { Button } from "@/components/button";
 import { FormField } from "@/components/form-field";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { useToast } from "@/components/toast";
 
 type User = { id: string; name: string; email: string };
 
@@ -20,9 +21,9 @@ export function ProfileForm({
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [serverError, setServerError] = useState<string>();
   const [showDialog, setShowDialog] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const { showToast } = useToast();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -60,7 +61,8 @@ export function ProfileForm({
       } else if (result?.fieldErrors) {
         setErrors(result.fieldErrors);
       } else if (result?.error) {
-        setServerError(result.error);
+        showToast(result.error, "error");
+        onClose();
       }
     });
   }
@@ -117,10 +119,6 @@ export function ProfileForm({
           placeholder="Confirmar nova senha"
           error={errors.confirmPassword}
         />
-
-        {serverError && (
-          <p className="text-sm text-red-500 text-center">{serverError}</p>
-        )}
 
         <div className="mt-auto pt-8">
           <Button type="submit" loading={isPending}>

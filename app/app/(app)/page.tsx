@@ -6,12 +6,27 @@ type ShoppingList = { id: string; name: string };
 type User = { id: string; name: string; email: string };
 
 export default async function HomePage() {
-  const [listsRes, userRes] = await Promise.all([
-    api.get("/lists"),
-    api.get("/users/me"),
-  ]);
+  let listsRes: Response;
+  let userRes: Response;
 
-  if (!listsRes.ok || !userRes.ok) redirect("/api/session/clear");
+  try {
+    [listsRes, userRes] = await Promise.all([
+      api.get("/lists"),
+      api.get("/users/me"),
+    ]);
+  } catch {
+    throw new Error(
+      "Erro de conexão. Verifique sua internet e tente novamente.",
+    );
+  }
+
+  if (listsRes.status === 401 || userRes.status === 401) {
+    redirect("/api/session/clear");
+  }
+
+  if (!listsRes.ok || !userRes.ok) {
+    throw new Error("Não foi possível carregar seus dados. Tente novamente.");
+  }
 
   const { items: lists }: { items: ShoppingList[] } = await listsRes.json();
   const user: User = await userRes.json();

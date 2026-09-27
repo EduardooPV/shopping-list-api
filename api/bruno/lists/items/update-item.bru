@@ -5,17 +5,17 @@ meta {
 }
 
 put {
-  url: {{baseUrl}}/lists/{{listId}}/items/{{itemId}}
+  url: 1{{baseUrl}}/lists/{{listId}}/items/{{itemId}}
   body: json
   auth: bearer
 }
 
-auth:bearer {
-  token: {{accessToken}}
-}
-
 headers {
   Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{accessToken}}
 }
 
 body:json {
