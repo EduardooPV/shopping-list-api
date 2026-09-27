@@ -3,8 +3,7 @@
 ## Sobe postgres (Docker) + API + App localmente com hot reload
 dev:
 	docker compose up -d postgres --remove-orphans
-	@trap 'kill 0' INT TERM; \
-	(cd api && npm run dev) & \
+	@(cd api && npm run dev) & \
 	(cd app && npm run dev) & \
 	wait
 
@@ -15,10 +14,10 @@ install:
 
 ## Para API, App e postgres
 stop:
-	@pkill -f "ts-node" 2>/dev/null || true
-	@pkill -f "nodemon" 2>/dev/null || true
-	@pkill -f "next" 2>/dev/null || true
-	docker compose stop postgres
+	@echo "Parando processos..."
+	@lsof -ti:3333 | xargs kill 2>/dev/null || true
+	@lsof -ti:3000 | xargs kill 2>/dev/null || true
+	@docker compose stop postgres
 	@echo "✓ Tudo parado"
 
 .DEFAULT_GOAL := dev
